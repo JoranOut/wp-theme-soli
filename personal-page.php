@@ -45,7 +45,13 @@
         echo '<span>'.($res->groupname).'</span>';
       }
     } ?>
+    </div>
   </div>
+  <div class="header files">
+    <ul>
+      <li><a href="<?php echo wp_get_attachment_url(9344); ?>">Statuten</a></li>
+      <li><a href="<?php echo wp_get_attachment_url(9343); ?>">Huishoudelijk reglement</a></li>
+    </ul>
   </div>
   <h1 class="container_title">Mijn Mededelingen</h1>
   <div class="item_container">

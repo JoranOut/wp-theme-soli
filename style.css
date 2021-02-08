@@ -1977,7 +1977,7 @@ body.login > #login > #nav {
 .personal .header li {
   position: relative;
   float: left;
-  transition: all .8s;
+  transition: all .5s;
   border-bottom: 5px solid rgba(0, 0, 0, 0);
 }
 
@@ -1993,6 +1993,23 @@ body.login > #login > #nav {
   cursor: pointer;
   text-decoration: none;
   color: rgba(0, 0, 0, 1);
+}
+
+.personal .header.files li a {
+  padding-left: 50px;
+  position: relative;
+}
+
+.personal .header.files li a::after {
+  content: '';
+  background: url('./assets/img/pdf.svg') center no-repeat;
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .personal .container_title {
