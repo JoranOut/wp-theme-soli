@@ -11,7 +11,12 @@
      ));
    $extended_class = ($children)?'extended':'';?>
    <div class="menu_item <?php echo $extended_class;?>">
-     <h3 onclick="window.location.href='<?php echo $menu_title->url; ?>'">
+     <h3
+       <?php
+        if(!$children) { ?>
+          onclick="window.location.href='<?php echo $menu_title->url; ?>'"
+       <?php } ?>
+     >
        <?php echo $menu_title->title; ?></h3>
      <?php
       if($children){
@@ -65,7 +70,7 @@
 
  function menu_sub_sub_menu($child_menu){
    get_menu_item($child_menu,'h3');
-   foreach (get_pages( array('parent' => $child_menu->ID) ) as $page_menu){
+   foreach (get_pages( array('parent' => $child_menu->ID, 'sort_column' => 'menu_order') ) as $page_menu){
      get_menu_item($page_menu,'a');
    }
  }

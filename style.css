@@ -159,6 +159,10 @@ body > header .first_menu .menu_item {
   position: relative;
 }
 
+body > header .first_menu .menu_item.extended {
+  cursor: default;
+}
+
 body > header .first_menu .menu_item:hover {
   color: rgba(255, 255, 255, 1);
   font-weight: 900;
@@ -294,6 +298,12 @@ body.admin-bar > header .sub_menu_item {
 .sub_menu_item > div > div a {
   margin-bottom: 1em;
   color: rgba(0, 0, 0, 0.533);
+}
+
+@media screen and (max-height: 650px) {
+  .sub_menu_item > div > div a {
+    margin-bottom: 0.2em;
+  }
 }
 
 .sub_menu_item > div > div a:hover {
@@ -2068,7 +2078,7 @@ body.login > #login > #nav {
   top: 40px;
   background: rgba(130, 37, 55, 1);
   color: rgba(255, 255, 255, 1);
-  z-index: 10;
+  z-index: 2;
   width: calc(100% - 40px);
   padding: 20px;
   text-align: center;
