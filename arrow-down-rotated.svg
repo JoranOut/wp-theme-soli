@@ -1,0 +1,18 @@
+<svg width="16" height="32" xmlns="http://www.w3.org/2000/svg">
+ <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+ <title>Path 2</title>
+ <desc>Created with Sketch.</desc>
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="34" width="18" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g transform="rotate(-90, 7.88917, 16.0094)" stroke-linejoin="round" stroke-linecap="round" fill-rule="evenodd" fill="none" id="Page-1">
+   <g stroke="#FFFFFF" stroke-width="3" id="home">
+    <polyline points="-6.145901679992676,8.99996280670166 7.873034477233887,23.01888370513916 21.924242973327637,8.99996280670166 " id="Path-2"/>
+   </g>
+  </g>
+ </g>
+</svg>

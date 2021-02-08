@@ -1,0 +1,247 @@
+<?php
+
+function admin_default_page() {
+  $current_user = wp_get_current_user();
+  $role_name = $current_user->roles[0];
+  if('administrator' != $role_name){
+    return home_url('/mijn-pagina');
+  } else {
+    return home_url('/wp-admin/');
+  }
+}
+add_filter('login_redirect', 'admin_default_page');
+
+
+add_action("wp_ajax_get_news_widget", "get_news_widget");
+add_action("wp_ajax_nopriv_get_news_widget","get_news_widget");
+function get_news_widget(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"get_news_widget_nonce")) {
+    exit("We are not for hack");
+  }
+
+  /*FILTER ON UAM GROUPS IF UAM IS ACTIVATED*/
+  include_once( ABSPATH . 'wp-admin/includes/user-access-manager.php' );
+  $plugin_active = is_plugin_active( 'user-access-manager/user-access-manager.php' );
+  $user_id = wp_get_current_user()->ID;
+
+  if($plugin_active){
+    global $wpdb;
+    $posts_avecGroupe = array();
+    $posts_avecGroupe = $wpdb->get_col("SELECT T2.object_id FROM ".$wpdb->prefix."uam_accessgroup_to_object T1
+                                      INNER JOIN ".$wpdb->prefix."uam_accessgroup_to_object T2 ON T1.group_id=T2.group_id
+                                      INNER JOIN ".$wpdb->prefix."posts ON wp_posts.ID=T2.object_id
+                                      WHERE T1.object_id = '".$user_id."' AND T2.object_type='post'
+                                      ORDER BY post_date DESC LIMIT 16");
+    $posts = get_posts( array('post__in'=>$posts_avecGroupe, "numberposts"=>6));
+  } else {
+    $posts = get_posts(array("numberposts" => 6));
+  }
+
+  global $post;
+  if($posts){
+    foreach ($posts as $post){
+      get_template_part( '/template-parts/post', 'excerpt-small' );
+    }
+  }
+  die();
+}
+
+add_action("wp_ajax_get_agenda_widget", "get_agenda_widget");
+add_action("wp_ajax_nopriv_get_agenda_widget","get_agenda_widget");
+function get_agenda_widget(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"get_agenda_widget_nonce")) {
+    exit("We are not for hack");
+  }
+
+  $myrows = get_myrows();
+  $events = tribe_get_events(array(
+    'posts_per_page' => 6,
+    'start_date' => date('Y-m-d H:i:s'),
+    'post__not_in' => $myrows
+  ));
+  if($events){
+    global $post;
+    foreach ($events as $post) {
+      get_template_part( 'template-parts/post', 'excerpt-small' );
+    }
+  }else{
+    get_template_part( 'template-parts/post/content', 'none');
+  }
+  die();
+}
+
+function compareByName($a, $b) {
+  return strcasecmp($a->getFilename(), $b->getFilename());
+}
+
+add_action("wp_ajax_get_music_widget", "get_music_widget");
+add_action("wp_ajax_nopriv_get_music_widget","get_music_widget");
+function get_music_widget(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"get_music_widget_nonce")) {
+    exit("We are not for hack");
+  }
+
+  echo '<li><a onclick="document.getElementById(\'musicmaindir\').style.display = \'block\'; document.getElementById(\'musicfolderdir\').style.display = \'none\';"><< terug</a></li>';
+  if(isset($_REQUEST['foldername'])){
+    $foldername = $_REQUEST['foldername'];
+    $di = new DirectoryIterator($foldername);
+    foreach ($di as $fileInfo) {
+        if ($fileInfo->isFile()) {
+            $allFilesinfo[] = clone $fileInfo;
+        }
+    }
+
+    usort($allFilesinfo, 'compareByName');
+
+    foreach ($allFilesinfo as $fileinf) {
+      echo '<li class="music"><a onclick="if(this.classList.contains(\'pause\')){this.classList.remove(\'pause\');document.getElementById(\'player'.addslashes($fileinf->getFilename()).'\').pause();}else{document.getElementById(\'player'.addslashes($fileinf->getFilename()).'\').play();this.classList.add(\'pause\');}">
+      <div class="audiobuttons">
+        <div class="play"></div>
+      </div>
+      <p>'. $fileinf->getFilename().'</p>
+      <audio id="player'.($fileinf->getFilename()).'" src="'.str_replace($_SERVER["DOCUMENT_ROOT"],'',$fileinf->getPathname()).'"></audio></a></li>';
+    }
+  }
+
+  die();
+}
+
+add_action("wp_ajax_get_message_widget", "get_message_widget");
+add_action("wp_ajax_nopriv_get_message_widget","get_message_widget");
+function get_message_widget(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"get_message_widget_nonce")) {
+    exit("We are not for hack");
+  }
+
+  if(isset($_REQUEST['group'])){
+    echo '<li><a onclick="document.getElementById(\'messagegroups\').style.display = \'block\'; document.getElementById(\'messages\').style.display = \'none\';"><< terug</a></li>';
+    global $wpdb;
+    $results = $wpdb->get_results('
+      SELECT '.$wpdb->prefix.'posts.post_title, '.$wpdb->prefix.'posts.ID, seen
+      FROM '.$wpdb->prefix.'posts
+      INNER JOIN
+      (SELECT object_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.group_id = '.$_REQUEST['group'].') w
+      ON '.$wpdb->prefix.'posts.id = w.object_id
+      LEFT JOIN
+      (SELECT '.$wpdb->prefix.'postmeta.post_id as seen FROM '.$wpdb->prefix.'postmeta WHERE '.$wpdb->prefix.'postmeta.meta_key LIKE "mededelingen"
+      AND '.$wpdb->prefix.'postmeta.meta_value = '.wp_get_current_user()->ID.') y
+      ON '.$wpdb->prefix.'posts.ID = y.seen
+      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen";
+      ');
+
+    if($results!=null){
+      foreach ($results as $res) {
+        $cl = ($res->seen)? '':'nseen';
+        $nwcl = ($res->seen)? '':'<span class="nwcl"></span>';
+        echo '<li><a data-messageid="'.($res->ID).'">'.($res->post_title).$nwcl.'<span class="'.$cl.'">></span></a></li>';
+      }
+    }
+  }
+
+  die();
+}
+
+add_action("wp_ajax_get_solo_message_widget", "get_solo_message_widget");
+add_action("wp_ajax_nopriv_get_solo_message_widget","get_solo_message_widget");
+function get_solo_message_widget(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"get_message_widget_nonce")) {
+    exit("We are not for hack");
+  }
+
+  echo '<li><a onclick="document.getElementById(\'messages\').style.display = \'block\'; document.getElementById(\'solomessage\').style.display = \'none\';"><< terug</a></li>';
+
+  if(isset($_REQUEST['messageid'])){
+    global $wpdb;
+    $results = $wpdb->get_results('
+      SELECT '.$wpdb->prefix.'posts.post_title, '.$wpdb->prefix.'posts.post_content, seen
+      FROM '.$wpdb->prefix.'posts
+      LEFT JOIN
+      (SELECT '.$wpdb->prefix.'postmeta.post_id as seen FROM '.$wpdb->prefix.'postmeta WHERE '.$wpdb->prefix.'postmeta.meta_key LIKE "mededelingen"
+      AND '.$wpdb->prefix.'postmeta.meta_value = '.wp_get_current_user()->ID.') y
+      ON '.$wpdb->prefix.'posts.ID = y.seen
+      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen" AND '.$wpdb->prefix.'posts.ID = '.$_REQUEST['messageid'].';
+      ');
+
+    $nwcl = ($results[0]->seen)? '':'<span class="nwcl"></span>';
+    echo '<li style="padding:30px">
+    <p>'.$nwcl.'</p>
+    <h2>'.$results[0]->post_title.'</h2>
+    <p>'.$results[0]->post_content.'</p>
+    </li>';
+
+    add_post_meta($_REQUEST['messageid'], "mededelingen", wp_get_current_user()->ID, true   );
+  }
+
+
+  die();
+}
+
+add_action("wp_ajax_refresh_message_widget", "refresh_message_widget");
+add_action("wp_ajax_nopriv_refresh_message_widget","refresh_message_widget");
+function refresh_message_widget(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"get_message_widget_nonce")) {
+    exit("We are not for hack");
+  }
+
+  $current_user = wp_get_current_user();
+  global $wpdb;
+  $results = $wpdb->get_results('
+  SELECT groupname, group_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object
+  INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id
+  WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id ='.$current_user->ID.' AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3');
+  if($results!=null){
+    foreach ($results as $res) {
+      $cnt = $wpdb->get_results('
+        SELECT COUNT(ID) as n, COUNT(seen) as seen
+        FROM '.$wpdb->prefix.'posts
+        INNER JOIN
+        (SELECT object_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.group_id = '.$res->group_id.') w
+        ON '.$wpdb->prefix.'posts.id = w.object_id
+        LEFT JOIN
+        (SELECT '.$wpdb->prefix.'postmeta.post_id as seen FROM '.$wpdb->prefix.'postmeta WHERE '.$wpdb->prefix.'postmeta.meta_key LIKE "mededelingen"
+        AND '.$wpdb->prefix.'postmeta.meta_value = '.$current_user->ID.') y
+        ON '.$wpdb->prefix.'posts.id = y.seen
+        WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen";
+        ');
+      $cn = $cnt[0]->n - $cnt[0]->seen;
+      $cl = ($cn <= 0)? '': 'nseen';
+      $nwcl = ($cn <= 0)? '': '<span class="nwcl"></span>';
+      echo '<li><a data-group="'.($res->group_id).'">'.($res->groupname).$nwcl.'<span class="'.$cl.'">'.$cnt[0]->n.'</span></a></li>';
+    }
+  }
+
+  die();
+}
+
+add_action("wp_ajax_any_message", "any_message");
+add_action("wp_ajax_nopriv_any_message","any_message");
+function any_message(){
+  if (!wp_verify_nonce($_REQUEST['nonce'],"any_message_nonce")) {
+    exit("We are not for hack");
+  }
+
+  $current_user = wp_get_current_user();
+  global $wpdb;
+  $cnt = $wpdb->get_results('
+      SELECT COUNT( ID ) AS count, COUNT( meta_value ) AS seen
+      FROM '.$wpdb->prefix.'posts
+      LEFT JOIN (
+
+      SELECT post_id, meta_value
+      FROM '.$wpdb->prefix.'postmeta
+      WHERE meta_key LIKE "mededelingen'.$current_user->ID.'"
+      ) w ON w.post_id = '.$wpdb->prefix.'posts.id
+      LEFT JOIN '.$wpdb->prefix.'uam_accessgroup_to_object ON '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = '.$wpdb->prefix.'posts.id
+      INNER JOIN (
+        SELECT groupname, group_id
+        FROM '.$wpdb->prefix.'uam_accessgroup_to_object
+        INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id
+        WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = '.$current_user->ID.'
+      ) y ON y.group_id = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id
+      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen"
+    ');
+  echo $cnt[0]->count - $cnt[0]->seen;
+  die();
+}
+
+?>

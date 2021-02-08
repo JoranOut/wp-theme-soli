@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13px" height="21px" viewBox="0 0 13 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>location-icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="home" transform="translate(-236.000000, -1535.000000)" fill="#FFFFFF">
+            <g id="sprite" transform="translate(20.000000, 1535.000000)">
+                <g id="location-icon" transform="translate(216.000000, 0.000000)">
+                    <g id="icon-location">
+                        <path d="M6.5,0 C2.9107,0 0,2.9386875 0,6.5625 C0,13.125 6.5,21 6.5,21 C6.5,21 13,13.125 13,6.5625 C13,2.9386875 10.0893,0 6.5,0 Z M6.5,10.5 C4.3459,10.5 2.6,8.7373125 2.6,6.5625 C2.6,4.3876875 4.3459,2.625 6.5,2.625 C8.6541,2.625 10.4,4.3876875 10.4,6.5625 C10.4,8.7373125 8.6541,10.5 6.5,10.5 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

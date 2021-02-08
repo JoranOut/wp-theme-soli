@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="368.5px"
+	 height="226.77px" viewBox="0 0 368.5 226.77" enable-background="new 0 0 368.5 226.77" xml:space="preserve">
+<g id="Laag_1">
+	<path fill="#FFFFFF" stroke="#000000" stroke-width="3" stroke-miterlimit="10" d="M367.375,211.932
+		c0,8.143-5.953,14.746-13.291,14.746H14.416c-7.34,0-13.29-6.604-13.29-14.746V17.301c0-8.144,5.95-14.746,13.29-14.746h339.668
+		c7.338,0,13.291,6.602,13.291,14.746V211.932z"/>
+	<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="152.542" y1="1.703" x2="152.542" y2="225.826"/>
+</g>
+<g id="eiffel">
+	<g>
+		<defs>
+			<rect id="SVGID_1_" x="1.882" y="1.798" width="151.417" height="223.271"/>
+		</defs>
+		<clipPath id="SVGID_2_">
+			<use xlink:href="#SVGID_1_"  overflow="visible"/>
+		</clipPath>
+		<path clip-path="url(#SVGID_2_)" d="M166.396,123.518l-30.167-25.934l-3.311-14.676c0-3.392-0.794-6.589-2.172-9.455
+			l28.672-33.349l-9.79-8.415l-27.724,32.249c-3.201-1.837-6.901-2.903-10.857-2.903c-5.69,0-10.856,2.191-14.747,5.753
+			L61.994,37.294l-8.414,9.788L89.71,78.144c-0.341,1.535-0.536,3.125-0.536,4.763l-4.021,20.896l-24.372,28.351l3.013,2.59H-3.742
+			l-9.5,16.998v35.995h92.644h8.605h57.83v-16.403h7.032l-11.875-52.631l16.985,14.603L166.396,123.518z M80.246,129.312
+			l-1.499,7.788l-1.49-2.356h-1.681L80.246,129.312z"/>
+	</g>
+</g>
+<g id="tekst">
+	<line fill="none" stroke="#000000" stroke-width="21" stroke-miterlimit="10" x1="179.674" y1="32.5" x2="262.62" y2="32.5"/>
+	<line fill="none" stroke="#000000" stroke-width="6" stroke-miterlimit="10" x1="179.674" y1="54.374" x2="224.377" y2="54.374"/>
+	<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="80.854" x2="302.413" y2="80.854"/>
+	<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="90.606" x2="281.225" y2="90.606"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="100.392" x2="297.763" y2="100.392"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="110.469" x2="290.785" y2="110.469"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="120.805" x2="285.617" y2="120.805"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="130.983" x2="299.829" y2="130.983"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="141.353" x2="297.763" y2="141.353"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="152.498" x2="290.785" y2="152.498"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.674" y1="164.384" x2="302.413" y2="164.384"/>
+	<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.708" y1="176.17" x2="290.819" y2="176.17"/>
+	
+		<line fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" x1="179.708" y1="187.898" x2="222.568" y2="187.898"/>
+</g>
+</svg>
