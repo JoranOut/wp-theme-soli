@@ -40,7 +40,7 @@
           get_template_part( 'template-parts/post', 'excerpt' );
         }
       }else{
-        get_template_part( 'template-parts/post/content', 'none');
+        get_template_part( 'template-parts/agenda-content', 'none');
       }
 
       previous_posts_link();

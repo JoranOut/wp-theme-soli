@@ -39,22 +39,6 @@ global $myrows;
 <div id="primary" class="content-area">
   <div id="scroll-target"></div>
 	<main id="main" class="site-main" role="main">
-    <!--h2 class="bollenactie">Onze bollenactie is dit jaar online! Bestel je hyacinten <a href="https://winkel.soli.nl">hier</a>. </h2>
-    <style>
-        h2.bollenactie {
-            padding: 40px 20px;
-            text-align: center;
-            font-size: 2rem !important;
-            border-bottom: 2px solid #aeaeae;
-            margin-bottom: 0;
-        }
-            
-        h2.bollenactie a {
-            font-size: 2rem;
-            font-weight: bolder;
-            color: rgba(170, 42, 42, 1);
-        }	
-    </style-->
     <section>
       <article class="wrap-excerpt">
         <section class="title"><h1>Nieuws</h1></section>
@@ -188,7 +172,9 @@ global $myrows;
       </article>
     </section>
     <section>
-      <?php get_advertisements()?>
+      <?php
+        get_template_part( 'template-parts/sponsorkliks', 'frontpage' );
+      ?>
       <article class="wrap-excerpt">
         <section class="title"><h1>Agenda</h1></section>
         <?php
@@ -203,7 +189,7 @@ global $myrows;
               get_template_part( 'template-parts/post', 'excerpt' );
             }
           } else{
-            get_template_part( 'template-parts/post/content', 'none');
+            get_template_part( 'template-parts/agenda-content', 'none');
           }
         } else {
           echo "Tribe Event Calendar plugin is not installed.";

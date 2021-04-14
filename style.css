@@ -590,7 +590,7 @@ body > header .login.open > div {
   max-width: 83.5rem;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-content: center;
   flex-wrap: wrap;
   margin: 0 auto;
@@ -604,7 +604,9 @@ body > header .login.open > div {
 .single-post .wrap-excerpt {
   padding: 0 0 5rem;
 }
-
+.wrap-excerpt > section.title {
+  margin: 100px 0 10px;
+}
 
 .wrap-excerpt > section:not(.title):not(.button) {
   width: 100%;
@@ -616,6 +618,10 @@ body > header .login.open > div {
   min-height: 200px;
   cursor: pointer;
   box-shadow: 2px 2px 5px 0px rgba(161, 161, 161, 1);
+}
+
+.wrap-excerpt section:nth-last-child(2):nth-of-type(2n) {
+  margin-right: auto !important;
 }
 
 .wrap-excerpt > section.post-excerpt-template.tip {
@@ -1169,7 +1175,7 @@ main > header > img:last-child {
 .flex-info {
   display: flex;
   flex-direction: row;
-  padding: 10px 0 0;
+  padding: 10px 0;
   flex-wrap: wrap-reverse;
   cursor: pointer;
 }
@@ -1178,7 +1184,8 @@ main > header > img:last-child {
   flex-wrap: wrap;
 }
 
-.flex-info:hover {
+.flex-info:hover,
+article:not(:hover) .flex-info:nth-child(even) {
   background-color: rgba(0, 0, 0, .04);
 }
 
@@ -1191,7 +1198,7 @@ main > header > img:last-child {
 
 .flex-info .flex-text {
   min-height: inherit;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 @media screen and (max-width: 736px) {
@@ -1207,98 +1214,94 @@ main > header > img:last-child {
 }
 
 /*--------------------------------------------------------------
-4.1 Advertisement
+4.1 Sponsorkliks
 --------------------------------------------------------------*/
-.recla {
-  height: 300px;
+.sponsorkliks {
   background: linear-gradient(-135deg, rgba(170, 42, 42, .8) 0, rgba(75, 33, 191, .8) 100%);
   position: relative;
 }
 
-.recla .container {
-  padding: 0;
+.sponsorkliks .container {
   height: 100%;
   position: relative;
   max-width: 83.5rem;
   margin: 0 auto;
-  padding: 0;
+  padding: 100px 30px 200px;
 }
 
-.recla .nav {
-  width: 20px;
-  height: 20px;
-  border-top: 3px solid rgba(255, 255, 255, 0.5);
-  border-left: 3px solid rgba(255, 255, 255, 0.5);
-  position: absolute;
-  transform: rotate(-45deg);
-  left: 15px;
-  top: 140px;
-  cursor: pointer;
+.personal .sponsorkliks .container {
+  padding: 60px 30px 100px;
+  max-width: 83.5rem;
 }
 
-.recla .nav.right {
-  left: auto;
-  right: 25px;
-  transform: rotate(135deg);
+.sponsorkliks h1 {
+  color: #fefefe;
+  margin: .5em 0;
 }
 
-.recla .nav:hover {
-  border-color: rgba(255, 255, 255, 1);
+.sponsorkliks .container > p {
+  color: #fefefe;
 }
 
-.recl {
-  position: absolute;
-  height: 210px;
-  max-width: 350px;
-  width: calc(100% - 100px);
-  margin: 40px 0;
-  right: 52%;
-  cursor: pointer;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+.sponsorkliks p a {
+  color: #fefefe;
+  transition: color .5s;
+  font-weight: bold;
 }
 
-.recl.second {
-  left: 52%;
-  right: auto;
+.sponsorkliks p a:hover {
+  color: #200;
 }
 
-.recl:not(.active) {
-  display: none;
+.sponsorkliks .shops {
+  display: flex;
+  flex-direction: row;
+  margin: 30px 0;
+  gap: 40px;
+  flex-wrap: wrap;
+  max-height: 320px;
+  overflow: hidden;
 }
 
-.nav-dots {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
+.sponsorkliks .shop {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 10%;
+  justify-content: center;
+  background: #fff;
+  padding: 15px;
+  transition: opacity .5s;
+  opacity: 0.9;
+}
+
+.sponsorkliks .shop:hover {
+  opacity: 1;
+}
+
+.sponsorkliks .shop a {
   text-align: center;
 }
 
-.nav-dots div {
-  background: rgba(255, 255, 255, 0.5);
-  width: 10px;
-  height: 10px;
-  margin: 15px 5px;
-  border-radius: 50%;
-  display: inline-block;
-  cursor: pointer;
+.sponsorkliks .shop p {
+  font-size: 0.5em;
+  text-align: center;
+  color: #efefef;
 }
 
-.nav-dots div:hover,
-.nav-dots div.active {
-  background: rgba(255, 255, 255, 1);
+.sponsorkliks .shop img {
+  filter: grayscale(20%) contrast(70%) brightness(130%);
+  transition: filter .5s;
+  max-width: 90px;
+  max-height: 40px;
 }
 
-@media screen and (max-width: 850px) {
-  .recl.second {
-    display: none;
-  }
+.sponsorkliks .shop:hover img {
+  filter: none;
+}
 
-  .recl {
-    left: 50%;
-    transform: translate(-50%);
-  }
+.personal .sponsorkliks {
+  background: rgba(239, 239, 239, 0.15);
+  margin: 100px 0;
 }
 
 /*--------------------------------------------------------------
@@ -2027,13 +2030,14 @@ body.login > #login > #nav {
   font-size: 3.4rem;
   margin: 0 auto .3rem;
   max-width: 85rem;
+  padding: 0 30px;
 }
 
 .personal .item_container {
   position: relative;
   margin-bottom: 60px;
   overflow-x: hidden;
-  padding-left: calc(50% - 42.5rem);
+  padding-left: calc(50% - 42.5rem - 30px);
 }
 
 .profilepicture {
@@ -2141,7 +2145,6 @@ body.login > #login > #nav {
   }
 
   .personal .item_container .move {
-    padding: 0 20px;
     overflow-x: auto;
   }
 
@@ -2151,10 +2154,6 @@ body.login > #login > #nav {
 
   .personal .item_container .nav {
     display: none;
-  }
-
-  .personal .container_title {
-    padding-left: 20px;
   }
 
   .profilename {
@@ -2201,6 +2200,7 @@ body.login > #login > #nav {
   display: flex;
   flex-direction: row;
   transition: left 1s;
+  padding: 0 30px;
 }
 
 @media screen and (max-width: 500px) {
@@ -2286,10 +2286,6 @@ body.login > #login > #nav {
   color: #000000aa;
   margin-top: 6px;
   font-size: 1.5rem;
-}
-
-.personal .recla {
-  background: none;
 }
 
 @media screen and (max-width: 865px) {

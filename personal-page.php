@@ -51,6 +51,7 @@
     <ul>
       <li><a href="<?php echo wp_get_attachment_url(9344); ?>">Statuten</a></li>
       <li><a href="<?php echo wp_get_attachment_url(9343); ?>">Huishoudelijk reglement</a></li>
+      <li><a href="https://www.soli.nl/activiteit/algemene-ledenvergadering-2021/">Algemene Ledenvergadering</a></li>
     </ul>
   </div>
   <h1 class="container_title">Mijn Mededelingen</h1>
@@ -104,7 +105,9 @@
     <div class="nav left"></div>
     <div class="nav right"></div>
   </div>
-  <?php get_advertisements()?>
+  <?php
+  get_template_part( 'template-parts/sponsorkliks', 'frontpage' );
+  ?>
   <h1 class="container_title">Mijn Agenda</h1>
   <div class="item_container">
     <div class="move">
