@@ -21,8 +21,8 @@
 	</header>
 	<div class="page-content">
     <div class="wrap-excerpt" style="position: relative">
-      <a class="monthlist_toggle list" href="<?php echo home_url("/agenda/month");?>"><div></div><span>Kalender</span><span>Lijst</span></a>
       <h1 class="title">Agenda</h1>
+      <a class="monthlist_toggle list" href="<?php echo home_url("/agenda/month");?>"><div></div><span>Kalender</span><span>Lijst</span></a>
       <?php
       $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
       $offset = $paged*16-16;

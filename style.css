@@ -597,13 +597,10 @@ body > header .login.open > div {
   padding: 3rem 0 5rem;
 }
 
-.archive .wrap-excerpt {
-  padding: 8rem 0 5rem;
-}
-
 .single-post .wrap-excerpt {
   padding: 0 0 5rem;
 }
+
 .wrap-excerpt > section.title {
   margin: 100px 0 10px;
 }
@@ -2414,14 +2411,14 @@ body.login > #login > #nav {
 }
 
 .monthlist_toggle {
-  position: absolute;
-  top: 0;
+  position: relative;
   padding: 15px 20px 15px 50px;
   text-decoration: none;
   color: rgba(255, 255, 255, 1);
   background: rgba(47, 24, 108, .8);
-  width: 60px;
+  width: 100%;
   height: 20px;
+  margin-bottom: 10px;
   box-shadow: rgba(21, 21, 21, 0.117647) 0px 1px 6px, rgba(21, 21, 21, 0.117647) 0px 1px 4px;
 }
 

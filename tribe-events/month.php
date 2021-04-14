@@ -22,8 +22,8 @@
 	</header>
   <div class="page-content">
     <div class="wrap-excerpt" style="position: relative">
-      <a class="monthlist_toggle" href="<?php echo home_url("/agenda/");?>"><div></div><span>Kalender</span><span>Lijst</span></a>
       <h1 class="title"><?php echo $main_title; ?></h1>
+      <a class="monthlist_toggle" href="<?php echo home_url("/agenda/");?>"><div></div><span>Kalender</span><span>Lijst</span></a>
       <?php
       global $wpdb;
 			$page_month_date    = new DateTime(tribe_get_month_view_date());
