@@ -53,7 +53,7 @@
  */
 function load_styles() {
   wp_enqueue_style('meyer-reset', get_template_directory_uri().'/meyer-reset.css', false, '5.2.0', 'all');
-  wp_enqueue_style('style', get_template_directory_uri().'/style.css', false, '5.2.1.2'. 'all');
+  wp_enqueue_style('style', get_template_directory_uri().'/style.css', false, '5.2.2.2'. 'all');
 }
 
 /**
@@ -86,7 +86,7 @@ function my_admin_enqueue($hook_suffix) {
  */
 add_action('admin_enqueue_scripts', 'my_admin_enqueue');
 add_action( 'wp_enqueue_scripts', 'load_styles' );
-add_action( 'wp_enqueue_scripts', 'load_scripts' );
+add_action( 'wp_enqueue_scripts', 'load_scripts', 99 );
 
 function limit_excerpt($source,$limit,$echo = true){
   if(strlen($source)>$limit){

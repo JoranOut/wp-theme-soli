@@ -45,8 +45,8 @@
 
       previous_posts_link();
       next_posts_link();
-      get_template_part('template-parts/ical', 'part');
-      ?>
+
+      get_template_part('template-parts/ical', 'part'); ?>
     </div>
 	</div>
 </article>

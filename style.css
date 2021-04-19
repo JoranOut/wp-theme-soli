@@ -1254,29 +1254,25 @@ article:not(:hover) .flex-info:nth-child(even) {
   display: flex;
   flex-direction: row;
   margin: 30px 0;
-  gap: 40px;
+  gap: 20px;
   flex-wrap: wrap;
-  max-height: 320px;
+  max-height: 350px;
   overflow: hidden;
 }
 
 .sponsorkliks .shop {
   display: flex;
-  flex-direction: column;
-  flex: 1 0 10%;
+  flex-direction: revert;
+  flex: 1 0 25%;
   justify-content: center;
   background: #fff;
-  padding: 15px;
   transition: opacity .5s;
-  opacity: 0.9;
+  opacity: 0.85;
+  padding: 10px;
 }
 
 .sponsorkliks .shop:hover {
   opacity: 1;
-}
-
-.sponsorkliks .shop a {
-  text-align: center;
 }
 
 .sponsorkliks .shop p {
@@ -1288,8 +1284,7 @@ article:not(:hover) .flex-info:nth-child(even) {
 .sponsorkliks .shop img {
   filter: grayscale(20%) contrast(70%) brightness(130%);
   transition: filter .5s;
-  max-width: 90px;
-  max-height: 40px;
+  max-height: 50px;
 }
 
 .sponsorkliks .shop:hover img {
@@ -1978,15 +1973,16 @@ body.login > #login > #nav {
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, .6);
 }
 
-.personal .header ul {
+.personal .header ul  {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .personal .header li {
   position: relative;
-  float: left;
   transition: all .5s;
   border-bottom: 5px solid rgba(0, 0, 0, 0);
 }
@@ -2809,7 +2805,7 @@ body.login > #login > #nav {
   cursor: pointer;
 }
 
-.ical-flexbox a:first-of-type {
+.ical-flexbox .ical-flexbox-copy {
   color: #fff;
   background: rgba(170, 42, 42, .8);
   font-size: 1.5rem;
@@ -2822,7 +2818,7 @@ body.login > #login > #nav {
   transform: translateX(-50%);
 }
 
-.ical-flexbox .disabled a:first-of-type {
+.ical-flexbox .disabled .copy {
   background: rgba(114, 114, 114, 0.8);
 }
 

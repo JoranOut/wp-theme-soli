@@ -24,7 +24,7 @@
     <ul>
       <li><a href="<?php echo get_home_url(); ?>">Website</a></li>
       <li><a href="<?php echo get_home_url(); ?>/agenda/month/">Mijn Agenda</a></li>
-      <li style="float:right"><a href="<?php echo wp_logout_url( home_url() ); ?>">Uitloggen</a></li>
+      <li style="margin-left: auto"><a href="<?php echo wp_logout_url( home_url() ); ?>">Uitloggen</a></li>
     </ul>
   </div>
   <div class="header personal">
@@ -51,7 +51,6 @@
     <ul>
       <li><a href="<?php echo wp_get_attachment_url(9344); ?>">Statuten</a></li>
       <li><a href="<?php echo wp_get_attachment_url(9343); ?>">Huishoudelijk reglement</a></li>
-      <li><a href="https://www.soli.nl/activiteit/algemene-ledenvergadering-2021/">Algemene Ledenvergadering</a></li>
     </ul>
   </div>
   <h1 class="container_title">Mijn Mededelingen</h1>

@@ -150,7 +150,7 @@ function standard_imaging($post, $size = 'large'){
   }
   if(!$post){
     $fp_info = get_soli_fp_info();
-    return wp_get_attachment_image_src($fp_info['frontpage_header_image'],'large');
+    return wp_get_attachment_image_src($fp_info['frontpage_background'],$size)[0];
   }
   for ($i=0; $i < count($prep); $i++) {
     if(check_preg($prep[$i][1],$post->post_title)||check_preg($prep[$i][1],$post->post_content))
