@@ -110,8 +110,7 @@
   <h1 class="container_title">Mijn Agenda</h1>
   <div class="item_container">
     <div class="move">
-      <?php include_once( ABSPATH . 'wp-admin/includes/user-access-manager.php' );
-      $plugin_active = is_plugin_active( 'user-access-manager/user-access-manager.php' );
+      <?php
       $user_id = wp_get_current_user()->ID;
 
       $posts = tribe_get_events(array(
