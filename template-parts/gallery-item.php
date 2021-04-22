@@ -28,7 +28,7 @@ global $post;
     <p>
       <?php
       if ( 'post' === get_post_type() ) :
-      echo get_the_time(d.' '.F.', '.Y);
+      echo get_the_time('d.F.Y');
       elseif ( 'tribe_events' === get_post_type() ) :
       $date = strtotime($post->event_date);
       echo date('d F, y',$date);

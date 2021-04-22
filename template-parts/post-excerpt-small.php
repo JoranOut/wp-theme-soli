@@ -16,7 +16,7 @@
      <div>
        <?php
        if ( 'post' === get_post_type() ) :
-          wrap_element(get_the_time(d.'/'.m),"em");
+          wrap_element(get_the_time('d/m'),"em");
        elseif ( 'tribe_events' === get_post_type() ) :
           $date = strtotime($post->event_date);
           wrap_element(date('d/m',$date),"em");

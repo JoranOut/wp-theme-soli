@@ -30,7 +30,7 @@ $monthNames = [
 			wrap_element(date('d ',$date).$monthNames[intval(date('m',$date))-1].date(' Y ',$date),"em");
 		elseif ('page' === get_post_type()) :
 		else :
-			wrap_element(get_the_time(d.' ').$monthNames[intval(get_the_time(m))-1].get_the_time(' Y '),"em");
+			wrap_element(get_the_time('d ').$monthNames[intval(get_the_time('m'))-1].get_the_time(' Y '),"em");
 
 		endif;
 		echo '<br>'.get_uam_groups_by_ID($post->ID);

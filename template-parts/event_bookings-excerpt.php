@@ -39,7 +39,7 @@ $date = strtotime($post->event_date);
       <?php
       if ( 'post' === get_post_type() ) :
         wrap_element(get_the_time(D),"strong");
-        wrap_element(get_the_time(d.'.'.m.'.'.y),"em");
+        wrap_element(get_the_time('d.m.y'),"em");
       elseif ( 'tribe_events' === get_post_type() ) :
         $date = strtotime($post->event_date);
         wrap_element(date('D',$date),"strong");
