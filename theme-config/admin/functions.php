@@ -1,4 +1,4 @@
-   <?php
+<?php
 /**
  * File to handle standard imaging
  */
@@ -17,7 +17,7 @@ add_action('admin_head', 'my_custom_admin_css');
 function my_custom_admin_css() {
   echo '<style>';
   include 'theme.css';
-  echo '</style>' ;
+  echo '</style>';
 }
 
 function soli_theme_admin_frontpage_page(){

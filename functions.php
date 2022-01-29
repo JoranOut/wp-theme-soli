@@ -188,6 +188,7 @@ function get_event_posts(){
 
 add_post_type_support( 'page', 'excerpt' );
 
+
 /**
  * load function file for search element
  */
@@ -228,8 +229,12 @@ require_once get_parent_theme_file_path('/theme-config/tv/functions.php');
  */
 require_once get_parent_theme_file_path('/theme-config/ical/functions.php');
 
-
 /**
  * load function file for reserveer plugin tribe_events
  */
 require_once get_parent_theme_file_path('/tribe-events/bookings.php');
+
+/**
+ * load function file for reserveer plugin tribe_events
+ */
+// require_once get_parent_theme_file_path('/theme-config/user/tussennaam.php');
