@@ -8,7 +8,7 @@
  **/
 add_action( 'admin_menu', 'my_admin_menu' );
 function my_admin_menu() {
-	add_menu_page( 'Thema instellingen', 'Thema instellingen', 'manage_options', 'theme/soli.php', 'soli_theme_admin_page', 'dashicons-admin-customizer',90 );
+  add_menu_page( 'Thema instellingen', 'Thema instellingen', 'manage_options', 'theme/soli.php', 'soli_theme_admin_page', 'dashicons-admin-customizer',90 );
   add_submenu_page('theme/soli.php','Voorpagina','Voorpagina','manage_options', 'theme/soli/voorpagina.php','soli_theme_admin_frontpage_page');
   add_submenu_page('theme/soli.php','Afbeeldingen','Afbeeldingen','manage_options', 'theme/soli/afbeeldingen.php','soli_theme_admin_image_page');
 }
@@ -82,8 +82,11 @@ function get_soli_groups() {
 }
 
 function get_soli_post_image($post, $size = 'large'){
+ if (!$post) {
+   return standard_imaging(null, $size);
+ }
  $image = get_the_post_thumbnail_url($post->ID, $size);
- if($image){
+ if ($image) {
    return $image;
  } else {
    return standard_imaging($post, $size);

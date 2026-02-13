@@ -12,7 +12,7 @@
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
   <header class="page-header" style="background-image: linear-gradient(-135deg, rgba(170, 42, 42, .2) 0%, rgba(75, 33, 191, .2) 100%),
-    url(<?php echo get_soli_post_image(get_page_by_title('agenda')->ID,'large'); ?>)">
+    url(<?php echo get_soli_post_image(get_page_by_title('agenda'),'large'); ?>)">
   <h1>
     <?php
       wp_title();

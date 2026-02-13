@@ -60,10 +60,11 @@ function moveElement(&$array, $a, $b) {
 									?><h1 class="title font-resizer"><?php echo $main_title; ?></h1><?php
 								}
 								the_content();
-							?>
+							    
+                            ?>
 							<div class="related">
 								<h3>Bekijk de onderliggende pagina's</h3>
-								<?php get_child_pages($child->ID); ?>
+								<?php get_child_pages($post->ID); ?>
 							</div>
 						</div>
 					</div>

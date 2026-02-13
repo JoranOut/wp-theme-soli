@@ -8,15 +8,29 @@
  * @version 2.0
  */
 
+$current_user = wp_get_current_user();
 
- $current_user = wp_get_current_user();
- $userid = $current_user->ID;
- $role_name = $current_user->roles[0];
+if (null === $current_user) {
+    error_log('wp_get_current_user returned NULL');
+    error_log('Defined in: ' . (new ReflectionFunction('wp_get_current_user'))->getFileName());
+}
 
- global $myrows;
- if($role_name==="lid"||$role_name==="author"||!is_user_logged_in()){
-   $myrows = get_myrows();
- }
+$userid    = 0;
+$role_name = null;
+
+if ( $current_user && $current_user->exists() ) {
+    $userid = (int) $current_user->ID;
+
+    if ( ! empty( $current_user->roles ) ) {
+        $role_name = $current_user->roles[0];
+    }
+}
+
+global $myrows, $post;
+
+if ( ! is_user_logged_in() || in_array( $role_name, array( 'lid', 'author' ), true ) ) {
+    $myrows = get_myrows();
+}
 
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -27,8 +41,8 @@
 <?php /* Social Media tags */
   $social_post["id"] = get_queried_object_id();
   if($social_post["id"]==0){
-    $social_post["post_title"] = ($_SERVER["REQUEST_URI"]=="/")?"SOLI.nl":$_SERVER["REQUEST_URI"];
-    $social_post["guid"] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $social_post["post_title"] = ($_SERVER["REQUEST_URI"]=="/") ? "SOLI.nl" : "SOLI.nl";
+    $social_post["guid"] = home_url($_SERVER["REQUEST_URI"]);
     $social_post["post_content"] = "Klik op de link of afbeelding om meer te zien!";
     $social_post["post_image"] = get_soli_post_image(null,'large');
   } else {
@@ -41,21 +55,21 @@
   $social_post["id"]='';
 ?>
 
-<meta property="og:title" content="<?php echo $social_post["post_title"]; ?>" />
-<meta property="og:url" content="<?php echo $social_post["guid"]; ?>" />
-<meta property="og:description" content="<?php echo $social_post["post_content"]; ?>" />
-<meta property="og:image" content="<?php echo $social_post["post_image"]; ?>"/>
+<meta property="og:title" content="<?php echo esc_attr($social_post["post_title"]); ?>" />
+<meta property="og:url" content="<?php echo esc_url($social_post["guid"]); ?>" />
+<meta property="og:description" content="<?php echo esc_attr($social_post["post_content"]); ?>" />
+<meta property="og:image" content="<?php echo esc_url($social_post["post_image"]); ?>"/>
 <meta property="og:type" content="article" />
 
-<meta itemprop="name" content="<?php echo $social_post["post_title"]; ?>">
-<meta itemscope itemtype="<?php echo $social_post["guid"]; ?>">
-<meta itemprop="description" content="<?php echo $social_post["post_content"]; ?>">
-<meta itemprop="image" content="<?php echo $social_post["post_content"]; ?>">
+<meta itemprop="name" content="<?php echo esc_attr($social_post["post_title"]); ?>">
+<meta itemscope itemtype="<?php echo esc_url($social_post["guid"]); ?>">
+<meta itemprop="description" content="<?php echo esc_attr($social_post["post_content"]); ?>">
+<meta itemprop="image" content="<?php echo esc_url($social_post["post_image"]); ?>">
 
-<meta name="twitter:image:alt" content="<?php echo $social_post["post_title"]; ?>">
-<meta name="twitter:title" content="<?php echo $social_post["post_title"]; ?>">
-<meta name="twitter:description" content="<?php echo $social_post["post_content"]; ?>">
-<meta name="twitter:image" content="<?php echo $social_post["post_content"]; ?>">
+<meta name="twitter:image:alt" content="<?php echo esc_attr($social_post["post_title"]); ?>">
+<meta name="twitter:title" content="<?php echo esc_attr($social_post["post_title"]); ?>">
+<meta name="twitter:description" content="<?php echo esc_attr($social_post["post_content"]); ?>">
+<meta name="twitter:image" content="<?php echo esc_url($social_post["post_image"]); ?>">
 <meta name="twitter:site" content="@MzvSoli">
 <meta name="twitter:creator" content="@MzvSoli">
 
@@ -125,7 +139,7 @@
         }
         ?>">
         <?php if(is_user_logged_in()){
-          echo '<span>'. wp_get_current_user()->user_firstname . '</span>';
+          echo '<span>'. esc_html(wp_get_current_user()->user_firstname) . '</span>';
         } else {
           echo '<span>Mijn Soli</span>';
         }?>

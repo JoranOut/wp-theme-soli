@@ -1,0 +1,8 @@
+{
+	"core": null,
+	"themes": ["."],
+	"plugins": [],
+	"lifecycleScripts": {
+		"afterStart": "npx wp-env run cli -- wp theme activate wp-theme-soli"
+	}
+}

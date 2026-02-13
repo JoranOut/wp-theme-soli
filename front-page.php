@@ -10,16 +10,18 @@ get_header();
 
 $fp_info = get_soli_fp_info();
 $image = wp_get_attachment_image_src($fp_info['frontpage_background'],'large');
-$header_image = wp_get_attachment_image_src($fp_info['frontpage_header_image'],'large');
+if(isset($fp_info['frontpage_header_image'])){
+    $header_image = wp_get_attachment_image_src($fp_info['frontpage_header_image'],'large');
+}
 global $myrows;
 ?>
 
 <header style="<?php
-  if($image[0]!==null){
+  if(isset($image[0])){
     echo "background-image:linear-gradient(-135deg, rgba(170, 42, 42, .7) 0,rgba(75, 33, 191, .7) 100%),url('".$image[0]."')";
   }?>; cursor: pointer" onclick="window.location.href='<?php echo $fp_info['frontpage_button_link']; ?>'">
   <img src="<?php
-    if($header_image[0]){
+    if(isset($header_image[0])){
       echo $header_image[0];
     } else {
       bloginfo('template_url');
@@ -39,7 +41,7 @@ global $myrows;
 <div id="primary" class="content-area">
   <div id="scroll-target"></div>
 	<main id="main" class="site-main" role="main">
-    <!--h2 class="bollenactie">Onze bollenactie is dit jaar weer online! Bestel je hyacinten <a href="https://winkel.soli.nl">hier</a>. </h2-->
+    <!--h2 class="bollenactie">De kaartverkoop van het voorjaarsconcert is gestart! Bestel je kaarten <a href="https://winkel.soli.nl/voorjaarsconcert/">hier</a>. </h2-->
     <style>
         h2.bollenactie {
             padding: 40px 20px;

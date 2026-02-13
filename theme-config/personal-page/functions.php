@@ -2,12 +2,16 @@
 
 function admin_default_page() {
   $current_user = wp_get_current_user();
-  $role_name = $current_user->roles[0];
-  if('administrator' != $role_name){
+  if ( ! $current_user->exists() ) {
     return home_url('/mijn-pagina');
-  } else {
-    return home_url('/wp-admin/');
   }
+
+  $roles = (array) $current_user->roles;
+  if ( in_array( 'administrator', $roles, true ) ) {
+    return admin_url();
+  }
+  
+  return home_url('/mijn-pagina');
 }
 add_filter('login_redirect', 'admin_default_page');
 
@@ -27,11 +31,14 @@ function get_news_widget(){
   if($plugin_active){
     global $wpdb;
     $posts_avecGroupe = array();
-    $posts_avecGroupe = $wpdb->get_col("SELECT T2.object_id FROM ".$wpdb->prefix."uam_accessgroup_to_object T1
+    $posts_avecGroupe = $wpdb->get_col($wpdb->prepare(
+                                      "SELECT T2.object_id FROM ".$wpdb->prefix."uam_accessgroup_to_object T1
                                       INNER JOIN ".$wpdb->prefix."uam_accessgroup_to_object T2 ON T1.group_id=T2.group_id
-                                      INNER JOIN ".$wpdb->prefix."posts ON wp_posts.ID=T2.object_id
-                                      WHERE T1.object_id = '".$user_id."' AND T2.object_type='post'
-                                      ORDER BY post_date DESC LIMIT 16");
+                                      INNER JOIN ".$wpdb->prefix."posts ON ".$wpdb->prefix."posts.ID=T2.object_id
+                                      WHERE T1.object_id = %d AND T2.object_type='post'
+                                      ORDER BY post_date DESC LIMIT 16",
+                                      intval($user_id)
+    ));
     $posts = get_posts( array('post__in'=>$posts_avecGroupe, "numberposts"=>6));
   } else {
     $posts = get_posts(array("numberposts" => 6));
@@ -83,8 +90,20 @@ function get_music_widget(){
 
   echo '<li><a onclick="document.getElementById(\'musicmaindir\').style.display = \'block\'; document.getElementById(\'musicfolderdir\').style.display = \'none\';"><< terug</a></li>';
   if(isset($_REQUEST['foldername'])){
-    $foldername = $_REQUEST['foldername'];
-    $di = new DirectoryIterator($foldername);
+    // Sanitize folder name to prevent path traversal
+    $foldername = sanitize_file_name($_REQUEST['foldername']);
+    $upload_dir = wp_upload_dir();
+    $music_base = $upload_dir['basedir'] . '/music/';
+    $full_path = realpath($music_base . $foldername);
+
+    // Verify the path is within the allowed directory
+    if ($full_path === false || strpos($full_path, realpath($music_base)) !== 0) {
+      echo '<li>Invalid directory</li>';
+      die();
+    }
+
+    $di = new DirectoryIterator($full_path);
+    $allFilesinfo = array();
     foreach ($di as $fileInfo) {
         if ($fileInfo->isFile()) {
             $allFilesinfo[] = clone $fileInfo;
@@ -94,12 +113,15 @@ function get_music_widget(){
     usort($allFilesinfo, 'compareByName');
 
     foreach ($allFilesinfo as $fileinf) {
-      echo '<li class="music"><a onclick="if(this.classList.contains(\'pause\')){this.classList.remove(\'pause\');document.getElementById(\'player'.addslashes($fileinf->getFilename()).'\').pause();}else{document.getElementById(\'player'.addslashes($fileinf->getFilename()).'\').play();this.classList.add(\'pause\');}">
+      $safe_filename = esc_attr($fileinf->getFilename());
+      $safe_id = 'player-' . sanitize_html_class($fileinf->getFilename());
+      $safe_src = esc_url(str_replace($_SERVER["DOCUMENT_ROOT"], '', $fileinf->getPathname()));
+      echo '<li class="music"><a onclick="if(this.classList.contains(\'pause\')){this.classList.remove(\'pause\');document.getElementById(\'' . $safe_id . '\').pause();}else{document.getElementById(\'' . $safe_id . '\').play();this.classList.add(\'pause\');}">
       <div class="audiobuttons">
         <div class="play"></div>
       </div>
-      <p>'. $fileinf->getFilename().'</p>
-      <audio id="player'.($fileinf->getFilename()).'" src="'.str_replace($_SERVER["DOCUMENT_ROOT"],'',$fileinf->getPathname()).'"></audio></a></li>';
+      <p>' . esc_html($fileinf->getFilename()) . '</p>
+      <audio id="' . $safe_id . '" src="' . $safe_src . '"></audio></a></li>';
     }
   }
 
@@ -116,24 +138,42 @@ function get_message_widget(){
   if(isset($_REQUEST['group'])){
     echo '<li><a onclick="document.getElementById(\'messagegroups\').style.display = \'block\'; document.getElementById(\'messages\').style.display = \'none\';"><< terug</a></li>';
     global $wpdb;
-    $results = $wpdb->get_results('
+    $group_id = intval($_REQUEST['group']);
+    $current_user_id = intval(wp_get_current_user()->ID);
+
+    // Verify user is a member of this group (IDOR protection)
+    $is_member = $wpdb->get_var($wpdb->prepare(
+      "SELECT COUNT(*) FROM ".$wpdb->prefix."uam_accessgroup_to_object
+       WHERE group_id = %d AND object_id = %d",
+      $group_id,
+      $current_user_id
+    ));
+
+    if (!$is_member) {
+      echo '<li>Access denied</li>';
+      die();
+    }
+
+    $results = $wpdb->get_results($wpdb->prepare('
       SELECT '.$wpdb->prefix.'posts.post_title, '.$wpdb->prefix.'posts.ID, seen
       FROM '.$wpdb->prefix.'posts
       INNER JOIN
-      (SELECT object_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.group_id = '.$_REQUEST['group'].') w
+      (SELECT object_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.group_id = %d) w
       ON '.$wpdb->prefix.'posts.id = w.object_id
       LEFT JOIN
       (SELECT '.$wpdb->prefix.'postmeta.post_id as seen FROM '.$wpdb->prefix.'postmeta WHERE '.$wpdb->prefix.'postmeta.meta_key LIKE "mededelingen"
-      AND '.$wpdb->prefix.'postmeta.meta_value = '.wp_get_current_user()->ID.') y
+      AND '.$wpdb->prefix.'postmeta.meta_value = %d) y
       ON '.$wpdb->prefix.'posts.ID = y.seen
-      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen";
-      ');
+      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen"',
+      $group_id,
+      $current_user_id
+    ));
 
     if($results!=null){
       foreach ($results as $res) {
         $cl = ($res->seen)? '':'nseen';
         $nwcl = ($res->seen)? '':'<span class="nwcl"></span>';
-        echo '<li><a data-messageid="'.($res->ID).'">'.($res->post_title).$nwcl.'<span class="'.$cl.'">></span></a></li>';
+        echo '<li><a data-messageid="'.esc_attr($res->ID).'">'.esc_html($res->post_title).$nwcl.'<span class="'.esc_attr($cl).'">></span></a></li>';
       }
     }
   }
@@ -152,24 +192,45 @@ function get_solo_message_widget(){
 
   if(isset($_REQUEST['messageid'])){
     global $wpdb;
-    $results = $wpdb->get_results('
+    $messageid = intval($_REQUEST['messageid']);
+    $current_user_id = intval(wp_get_current_user()->ID);
+
+    // Verify user has access to this message (IDOR protection)
+    $has_access = $wpdb->get_var($wpdb->prepare(
+      "SELECT COUNT(*) FROM ".$wpdb->prefix."uam_accessgroup_to_object msg
+       INNER JOIN ".$wpdb->prefix."uam_accessgroup_to_object usr ON msg.group_id = usr.group_id
+       WHERE msg.object_id = %d AND usr.object_id = %d",
+      $messageid,
+      $current_user_id
+    ));
+
+    if (!$has_access) {
+      echo '<li>Access denied</li>';
+      die();
+    }
+
+    $results = $wpdb->get_results($wpdb->prepare('
       SELECT '.$wpdb->prefix.'posts.post_title, '.$wpdb->prefix.'posts.post_content, seen
       FROM '.$wpdb->prefix.'posts
       LEFT JOIN
       (SELECT '.$wpdb->prefix.'postmeta.post_id as seen FROM '.$wpdb->prefix.'postmeta WHERE '.$wpdb->prefix.'postmeta.meta_key LIKE "mededelingen"
-      AND '.$wpdb->prefix.'postmeta.meta_value = '.wp_get_current_user()->ID.') y
+      AND '.$wpdb->prefix.'postmeta.meta_value = %d) y
       ON '.$wpdb->prefix.'posts.ID = y.seen
-      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen" AND '.$wpdb->prefix.'posts.ID = '.$_REQUEST['messageid'].';
-      ');
+      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen" AND '.$wpdb->prefix.'posts.ID = %d',
+      $current_user_id,
+      $messageid
+    ));
 
-    $nwcl = ($results[0]->seen)? '':'<span class="nwcl"></span>';
-    echo '<li style="padding:30px">
-    <p>'.$nwcl.'</p>
-    <h2>'.$results[0]->post_title.'</h2>
-    <p>'.$results[0]->post_content.'</p>
-    </li>';
+    if($results && isset($results[0])){
+      $nwcl = ($results[0]->seen)? '':'<span class="nwcl"></span>';
+      echo '<li style="padding:30px">
+      <p>'.$nwcl.'</p>
+      <h2>'.esc_html($results[0]->post_title).'</h2>
+      <p>'.wp_kses_post($results[0]->post_content).'</p>
+      </li>';
 
-    add_post_meta($_REQUEST['messageid'], "mededelingen", wp_get_current_user()->ID, true   );
+      add_post_meta($messageid, "mededelingen", $current_user_id, true);
+    }
   }
 
 
@@ -184,29 +245,35 @@ function refresh_message_widget(){
   }
 
   $current_user = wp_get_current_user();
+  $current_user_id = intval($current_user->ID);
   global $wpdb;
-  $results = $wpdb->get_results('
+  $results = $wpdb->get_results($wpdb->prepare('
   SELECT groupname, group_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object
   INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id
-  WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id ='.$current_user->ID.' AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3');
+  WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = %d AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3',
+  $current_user_id
+  ));
   if($results!=null){
     foreach ($results as $res) {
-      $cnt = $wpdb->get_results('
+      $group_id = intval($res->group_id);
+      $cnt = $wpdb->get_results($wpdb->prepare('
         SELECT COUNT(ID) as n, COUNT(seen) as seen
         FROM '.$wpdb->prefix.'posts
         INNER JOIN
-        (SELECT object_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.group_id = '.$res->group_id.') w
+        (SELECT object_id FROM '.$wpdb->prefix.'uam_accessgroup_to_object WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.group_id = %d) w
         ON '.$wpdb->prefix.'posts.id = w.object_id
         LEFT JOIN
         (SELECT '.$wpdb->prefix.'postmeta.post_id as seen FROM '.$wpdb->prefix.'postmeta WHERE '.$wpdb->prefix.'postmeta.meta_key LIKE "mededelingen"
-        AND '.$wpdb->prefix.'postmeta.meta_value = '.$current_user->ID.') y
+        AND '.$wpdb->prefix.'postmeta.meta_value = %d) y
         ON '.$wpdb->prefix.'posts.id = y.seen
-        WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen";
-        ');
+        WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen"',
+        $group_id,
+        $current_user_id
+      ));
       $cn = $cnt[0]->n - $cnt[0]->seen;
       $cl = ($cn <= 0)? '': 'nseen';
       $nwcl = ($cn <= 0)? '': '<span class="nwcl"></span>';
-      echo '<li><a data-group="'.($res->group_id).'">'.($res->groupname).$nwcl.'<span class="'.$cl.'">'.$cnt[0]->n.'</span></a></li>';
+      echo '<li><a data-group="'.esc_attr($group_id).'">'.esc_html($res->groupname).$nwcl.'<span class="'.esc_attr($cl).'">'.intval($cnt[0]->n).'</span></a></li>';
     }
   }
 
@@ -221,26 +288,29 @@ function any_message(){
   }
 
   $current_user = wp_get_current_user();
+  $current_user_id = intval($current_user->ID);
   global $wpdb;
-  $cnt = $wpdb->get_results('
+  $meta_key = 'mededelingen' . $current_user_id;
+  $cnt = $wpdb->get_results($wpdb->prepare('
       SELECT COUNT( ID ) AS count, COUNT( meta_value ) AS seen
       FROM '.$wpdb->prefix.'posts
       LEFT JOIN (
-
       SELECT post_id, meta_value
       FROM '.$wpdb->prefix.'postmeta
-      WHERE meta_key LIKE "mededelingen'.$current_user->ID.'"
+      WHERE meta_key LIKE %s
       ) w ON w.post_id = '.$wpdb->prefix.'posts.id
       LEFT JOIN '.$wpdb->prefix.'uam_accessgroup_to_object ON '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = '.$wpdb->prefix.'posts.id
       INNER JOIN (
         SELECT groupname, group_id
         FROM '.$wpdb->prefix.'uam_accessgroup_to_object
         INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id
-        WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = '.$current_user->ID.'
+        WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = %d
       ) y ON y.group_id = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id
-      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen"
-    ');
-  echo $cnt[0]->count - $cnt[0]->seen;
+      WHERE '.$wpdb->prefix.'posts.post_type LIKE "mededelingen"',
+      $meta_key,
+      $current_user_id
+  ));
+  echo intval($cnt[0]->count - $cnt[0]->seen);
   die();
 }
 

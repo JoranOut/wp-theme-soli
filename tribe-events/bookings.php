@@ -107,15 +107,23 @@ add_action('wp_ajax_nopriv_db_get_participants', 'db_get_participants');
 add_action('wp_ajax_db_get_participants', 'db_get_participants');
 function db_get_participants()
 {
+  if (!wp_verify_nonce($_REQUEST['nonce'], "booking")) {
+    exit("Security check failed");
+  }
+
   if(!isset($_REQUEST['post_id'])){
     return;
   }
 
   global $wpdb;
-  $cnt = $wpdb->get_results('
-        SELECT *
+  $post_id = intval($_REQUEST['post_id']);
+  $cnt = $wpdb->get_results($wpdb->prepare(
+        'SELECT *
         FROM ' . $wpdb->prefix . 'postmeta
-        WHERE meta_key = \'event_bookable_participants\' and post_id = \''.$_REQUEST['post_id'].'\'');
+        WHERE meta_key = %s AND post_id = %d',
+        'event_bookable_participants',
+        $post_id
+  ));
 
   echo json_encode($cnt);
   die();
@@ -191,8 +199,8 @@ function set_booking_participant()
     exit("We are not for hack");
   }
 
-  $post_id = $_REQUEST['post_id'];
-  $instrument = $_REQUEST['instrument'];
+  $post_id = intval($_REQUEST['post_id']);
+  $instrument = sanitize_text_field($_REQUEST['instrument']);
 
   $range = get_post_meta($post_id, 'event_bookable_range', true) ? get_post_meta($post_id, 'event_bookable_range', true) : 30;
   $current_meta = get_post_meta($post_id, "event_bookable_participants", true);
@@ -229,9 +237,9 @@ function delete_booking_participant()
     exit("We are not for hack");
   }
 
-  $post_id = $_REQUEST['post_id'];
-  $user_id = $_REQUEST['user_id'];
-  if (!isset($user_id)) {
+  $post_id = intval($_REQUEST['post_id']);
+  $user_id = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
+  if (!$user_id) {
     $user_id = wp_get_current_user()->ID;
   }
 

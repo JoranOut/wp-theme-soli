@@ -16,8 +16,13 @@ $opt_default_val = get_option( $opt_default_name );
 // See if the user has posted us some information
 // If they did, this hidden field will be set to 'Y'
 if( isset($_POST[ $hidden_default_field_name ]) && $_POST[ $hidden_default_field_name ] == 'Y' ) {
-    // Read their posted value
-    $opt_default_val = $_POST[ $data_default_field_name ];
+    // Verify nonce
+    if ( !isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'frontpage-settings-group-options') ) {
+        wp_die( __('Security check failed.') );
+    }
+
+    // Read and sanitize their posted value
+    $opt_default_val = sanitize_text_field($_POST[ $data_default_field_name ]);
 
     // Save the posted value in the database
     update_option( $opt_default_name, $opt_default_val );
@@ -48,7 +53,7 @@ if( isset($_POST[ $hidden_default_field_name ]) && $_POST[ $hidden_default_field
           </tr>
           <tr valign="top">
           <th scope="row">Title voorpagina:</th>
-          <td><input type="text" id="frontpage_title" value="<?php echo $fp_info['frontpage_title']; ?>" init-value="<?php echo $fp_info['frontpage_title'];?>"/></td>
+          <td><input type="text" id="frontpage_title" value="<?php echo esc_attr($fp_info['frontpage_title']); ?>" init-value="<?php echo esc_attr($fp_info['frontpage_title']);?>"/></td>
           </tr>
           <tr valign="top" style="border-top:1px solid black">
           <th scope="row">Afbeelding voorpagina:</th>
@@ -58,11 +63,11 @@ if( isset($_POST[ $hidden_default_field_name ]) && $_POST[ $hidden_default_field
             <input type="radio" name="post"
             id="default"
             class="select_event"
-            data-url="<?php echo $fp_info['frontpage_button_link'];?>"
-            data-subtitle="<?php echo $fp_info['frontpage_subtitle'];?>"
-            data-image="<?php echo wp_get_attachment_image_src($fp_info['frontpage_background'],'full')[0];?>"
-            data-imageid="<?php echo $fp_info['frontpage_background'];?>"
-            data-date="<?php echo $fp_info['frontpage_subtext'];?>"
+            data-url="<?php echo esc_attr($fp_info['frontpage_button_link']);?>"
+            data-subtitle="<?php echo esc_attr($fp_info['frontpage_subtitle']);?>"
+            data-image="<?php echo esc_url(wp_get_attachment_image_src($fp_info['frontpage_background'],'full')[0]);?>"
+            data-imageid="<?php echo esc_attr($fp_info['frontpage_background']);?>"
+            data-date="<?php echo esc_attr($fp_info['frontpage_subtext']);?>"
             value="0"/>
             <label for="default">default</label>
             <?php
@@ -84,16 +89,16 @@ if( isset($_POST[ $hidden_default_field_name ]) && $_POST[ $hidden_default_field
           </tr>
           <tr valign="top">
           <th scope="row">Subtitle:</th>
-          <td><input type="text" id="frontpage_subtitle" value="<?php echo $fp_info['frontpage_subtitle']; ?>" init-value="<?php echo $fp_info['frontpage_subtitle']; ?>"/></td>
+          <td><input type="text" id="frontpage_subtitle" value="<?php echo esc_attr($fp_info['frontpage_subtitle']); ?>" init-value="<?php echo esc_attr($fp_info['frontpage_subtitle']); ?>"/></td>
           </tr>
           <tr valign="top">
           <th scope="row">Datum:</th>
-          <td><input type="text" id="frontpage_subtext" value="<?php echo $fp_info['frontpage_subtext']; ?>" init-value="<?php echo $fp_info['frontpage_subtext']; ?>"/></td>
+          <td><input type="text" id="frontpage_subtext" value="<?php echo esc_attr($fp_info['frontpage_subtext']); ?>" init-value="<?php echo esc_attr($fp_info['frontpage_subtext']); ?>"/></td>
           </tr>
           <tr valign="top">
           <th scope="row">Button link:</th>
           <td>
-            <input type="text" id="frontpage_button_link" value="<?php echo $fp_info['frontpage_button_link']; ?>" init-value="<?php echo $fp_info['frontpage_button_link']; ?>"/>
+            <input type="text" id="frontpage_button_link" value="<?php echo esc_url($fp_info['frontpage_button_link']); ?>" init-value="<?php echo esc_url($fp_info['frontpage_button_link']); ?>"/>
             <p><i>Begin url with 'http://' or 'https://'</p>
           </td>
           </tr>

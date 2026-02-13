@@ -15,7 +15,7 @@ global $post;
     <?php
     if(get_post_type($post->ID)=="mededelingen"){
       if(!metadata_exists('post', $post->ID, "mededelingen".wp_get_current_user()->ID)){
-        if($results[0]==null){
+        if(isset($results[0])){
           echo '<div class="new">nieuw</div>';
         }
       }

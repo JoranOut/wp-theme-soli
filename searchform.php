@@ -8,7 +8,7 @@
 
 
  function checkcheckbox($id){
-   if($_POST[$id]){
+   if(ISSET($_POST[$id])){
      echo "checked";
    }
  }

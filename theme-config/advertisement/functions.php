@@ -127,9 +127,9 @@ function get_advertisements(){
         while ( $loop->have_posts() ) : $loop->the_post();
           ?>
           <a class="recl"
-              title="<?php the_title() ?>"
-              style="background-image:url('<?php echo wp_get_attachment_url(get_post_meta($post->ID, 'ad_pic',true),'large'); ?>')"
-              href="<?php echo get_post_meta($post->ID, 'ad_link',true); ?>" target="_blank">
+              title="<?php echo esc_attr(get_the_title()); ?>"
+              style="background-image:url('<?php echo esc_url(wp_get_attachment_url(get_post_meta($post->ID, 'ad_pic',true),'large')); ?>')"
+              href="<?php echo esc_url(get_post_meta($post->ID, 'ad_link',true)); ?>" target="_blank">
               <?php
               if(wp_get_attachment_url(get_post_meta($post->ID, 'ad_pic',true))==null){
                 the_title();
@@ -165,16 +165,31 @@ function my_enqueue($hook) {
 
 add_action( 'save_post', 'ad_pic_save', 10, 1 );
 function ad_pic_save ( $post_id ) {
+  // Check if this is an autosave
+  if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) {
+    return;
+  }
+
+  // Verify current user can edit this post
+  if ( !current_user_can('edit_post', $post_id) ) {
+    return;
+  }
+
+  // Verify nonce
+  if ( !isset($_POST['event_fields']) || !wp_verify_nonce($_POST['event_fields'], basename(__FILE__)) ) {
+    return;
+  }
+
 	if( isset( $_POST['_listing_cover_image'] ) ) {
- 	  $image_id = (int) $_POST['_listing_cover_image'];
+ 	  $image_id = absint($_POST['_listing_cover_image']);
  		update_post_meta( $post_id, 'ad_pic', $image_id );
  	}
   if( isset( $_POST['ad_link'] ) ) {
- 	  $ad_link = $_POST['ad_link'];
-    if(!get_post_meta( $post->ID, 'ad_link', true )){
-      update_post_meta( $post_id, 'ad_link', $ad_link);
-    } else {
+ 	  $ad_link = esc_url_raw($_POST['ad_link']);
+    if(!get_post_meta( $post_id, 'ad_link', true )){
       add_post_meta( $post_id, 'ad_link', $ad_link);
+    } else {
+      update_post_meta( $post_id, 'ad_link', $ad_link);
     }
  	}
 }

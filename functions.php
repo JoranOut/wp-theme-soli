@@ -22,9 +22,12 @@
  remove_action( 'wp_head', 'feed_links', 2 );
 
  $current_user = wp_get_current_user();
- $role_name = $current_user->roles[0];
- if($role_name==="lid"||$role_name==="subscriber"){
-   add_filter('show_admin_bar', '__return_false');
+ $role_name = null;
+ if ( $current_user && $current_user->exists() && ! empty( $current_user->roles ) ) {
+    $role_name = $current_user->roles[0];
+ }
+ if ( in_array( $role_name, array( 'lid', 'subscriber' ), true ) ) {
+    add_filter( 'show_admin_bar', '__return_false' );
  }
 
  add_action('wp_logout','auto_redirect_after_logout');
@@ -237,4 +240,4 @@ require_once get_parent_theme_file_path('/tribe-events/bookings.php');
 /**
  * load function file for reserveer plugin tribe_events
  */
-// require_once get_parent_theme_file_path('/theme-config/user/tussennaam.php');
+require_once get_parent_theme_file_path('/theme-config/user/middle_name.php');

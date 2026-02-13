@@ -16,7 +16,7 @@
  $user_id = $current_user->ID;
  $user_role = $current_user->roles[0];
 
- global $myrows;
+ global $myrows, $post;
 
  function enqueue_bookings_scripts() {
    wp_enqueue_script( 'bookings_script', get_template_directory_uri() . '/assets/js/bookings.js', array('jquery') );

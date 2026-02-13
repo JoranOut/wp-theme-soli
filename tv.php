@@ -31,6 +31,7 @@ $tvs = $loop->posts;
 $html = "<!DOCTYPE html><html><head>
 <meta charset=".get_bloginfo( 'charset' ).">
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+<meta name=\"googlebot\" content=\"notranslate\">
 <style>
 html,body {margin:0; padding:0}
 html      {overflow: hidden}

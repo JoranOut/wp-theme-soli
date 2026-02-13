@@ -46,87 +46,127 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
 		<div class="results">
     <?php
 		$types = array();
-		if($_POST['news']) array_push($types, "post");
-		if($_POST['page']) array_push($types, "page");
-		if($_POST['music']) array_push($types, "music");
-		if($_POST['mededeling']) array_push($types, "mededelingen");
-    $types = implode("' OR p.post_type LIKE '",$types);
+		if(!empty($_POST['news'])) array_push($types, "post");
+		if(!empty($_POST['page'])) array_push($types, "page");
+		if(!empty($_POST['music'])) array_push($types, "music");
+		if(!empty($_POST['mededeling'])) array_push($types, "mededelingen");
 
     $groups = array();
-    if($_POST['Harmonie']) array_push($groups, "8");
-    if($_POST['KleinOrkest']) array_push($groups, "5");
-    if($_POST['Marsorkest']) array_push($groups, "4");
-    if($_POST['Bigband']) array_push($groups, "23");
-    if($_POST['Opleidingsorkest']) array_push($groups, "11");
-    if($_POST['Slagwerkgroep']) array_push($groups, "18");
-    if($_POST['Opstapklas']) array_push($groups, "12");
-    if($_POST['Samenspeelklas']) array_push($groups, "14");
-    if($_POST['Volwassenopstapklas']) array_push($groups, "20");
-    if($_POST['Twirlteam']) array_push($groups, "10");
-    if($_POST['StilOrkest']) array_push($groups, "22");
-    if($_POST['Funband']) array_push($groups, "21");
-    if(!empty($groups)) array_push($groups, "3");
-    $groups = implode("' OR a.group_id LIKE '",$groups);
+    if(!empty($_POST['Harmonie'])) array_push($groups, 8);
+    if(!empty($_POST['KleinOrkest'])) array_push($groups, 5);
+    if(!empty($_POST['Marsorkest'])) array_push($groups, 4);
+    if(!empty($_POST['Bigband'])) array_push($groups, 23);
+    if(!empty($_POST['Opleidingsorkest'])) array_push($groups, 11);
+    if(!empty($_POST['Slagwerkgroep'])) array_push($groups, 18);
+    if(!empty($_POST['Opstapklas'])) array_push($groups, 12);
+    if(!empty($_POST['Samenspeelklas'])) array_push($groups, 14);
+    if(!empty($_POST['Volwassenopstapklas'])) array_push($groups, 20);
+    if(!empty($_POST['Twirlteam'])) array_push($groups, 10);
+    if(!empty($_POST['StilOrkest'])) array_push($groups, 22);
+    if(!empty($_POST['Funband'])) array_push($groups, 21);
+    if(!empty($groups)) array_push($groups, 3);
+
+    // Sanitize search term
+    $search_term = isset($_POST['s']) ? sanitize_text_field($_POST['s']) : '';
 
     if(!empty($groups)) echo "Niet gevonden wat je zocht? Verfijn je zoekopdracht of verwijder je filters.";
 
-    if($_POST['event']||empty($types)) {
-    $searcheventquery = $wpdb->prepare("
-      SELECT DISTINCT
-      p.ID, p.post_author, m.meta_value as post_date, p.post_date_gmt,
-      p.post_content, p.post_title, p.post_excerpt, p.post_status,
-      p.comment_status, p.ping_status, p.post_password, p.post_name,
-      p.to_ping, p.pinged, p.post_modified, p.post_modified_gmt,
-      p.post_content_filtered, p.post_parent, p.guid, p.menu_order,
-      p.post_type, p.post_mime_type, p.comment_count
-      FROM wp_posts p
-      LEFT JOIN wp_uam_accessgroup_to_object a ON p.ID = a.object_id
-      INNER JOIN wp_postmeta m ON p.ID = m.post_id
-      WHERE (p.post_title LIKE '%s'
-      OR p.post_content LIKE '%s')
-      AND p.post_type LIKE 'tribe_events'
-      AND p.post_status LIKE 'publish'
-      AND m.meta_key LIKE '_EventStartDate'
-      AND p.ID NOT IN (".$myrowsquery.")",'%'.$_POST['s'].'%', '%'.$_POST['s'].'%');
-    if($groups) $searcheventquery .= " AND (a.group_id = '".$groups."') ";
-  }
-  if($_POST['event'] XOR empty($types)) {
-    $searcheventquery .= "
-      AND m.meta_key LIKE \"_EventStartDate\"
-      UNION ";
+    // Build type condition safely
+    $type_condition = '';
+    if(!empty($types)) {
+      $type_placeholders = array_fill(0, count($types), '%s');
+      $type_condition = " AND p.post_type IN (" . implode(',', $type_placeholders) . ")";
     }
-  if(!($_POST['event']&&empty($types))) {
-    $searcheventquery .= $wpdb->prepare("
-      SELECT DISTINCT
-      p.ID, p.post_author, p.post_date, p.post_date_gmt, p.post_content, p.post_title,
-      p.post_excerpt, p.post_status, p.comment_status, p.ping_status,
-      p.post_password, p.post_name, p.to_ping, p.pinged, p.post_modified,
-      p.post_modified_gmt, p.post_content_filtered, p.post_parent, p.guid,
-      p.menu_order, p.post_type, p.post_mime_type, p.comment_count
-      FROM wp_posts p
-      LEFT JOIN wp_uam_accessgroup_to_object a ON p.ID = a.object_id
-      WHERE (p.post_title LIKE '%s'
-      OR p.post_content LIKE '%s')
-      AND p.post_status LIKE 'publish'
-      AND p.ID NOT IN (".$myrowsquery.")
-      AND p.post_type NOT LIKE 'tribe_events' ",'%'.$_POST['s'].'%', '%'.$_POST['s'].'%');
-    if($types) $searcheventquery .= " AND (p.post_type LIKE '".$types."') ";
-    if($groups) $searcheventquery .= " AND (a.group_id = '".$groups."') ";
-  }
+
+    // Build group condition safely (groups are already integers from our whitelist)
+    $group_condition = '';
+    if(!empty($groups)) {
+      $group_placeholders = array_fill(0, count($groups), '%d');
+      $group_condition = " AND a.group_id IN (" . implode(',', $group_placeholders) . ")";
+    }
+
+    // Sanitize myrowsquery - ensure all values are integers
+    $myrows_safe = array_map('intval', (array)$myrows);
+    $myrowsquery_safe = !empty($myrows_safe) ? implode(',', $myrows_safe) : '0';
+
+    $searcheventquery = '';
+    $query_params = array();
+
+    if(!empty($_POST['event']) || empty($types)) {
+      $searcheventquery = "
+        SELECT DISTINCT
+        p.ID, p.post_author, m.meta_value as post_date, p.post_date_gmt,
+        p.post_content, p.post_title, p.post_excerpt, p.post_status,
+        p.comment_status, p.ping_status, p.post_password, p.post_name,
+        p.to_ping, p.pinged, p.post_modified, p.post_modified_gmt,
+        p.post_content_filtered, p.post_parent, p.guid, p.menu_order,
+        p.post_type, p.post_mime_type, p.comment_count
+        FROM {$wpdb->prefix}posts p
+        LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object a ON p.ID = a.object_id
+        INNER JOIN {$wpdb->prefix}postmeta m ON p.ID = m.post_id
+        WHERE (p.post_title LIKE %s
+        OR p.post_content LIKE %s)
+        AND p.post_type = 'tribe_events'
+        AND p.post_status = 'publish'
+        AND m.meta_key = '_EventStartDate'
+        AND p.ID NOT IN ({$myrowsquery_safe})";
+      $query_params[] = '%' . $wpdb->esc_like($search_term) . '%';
+      $query_params[] = '%' . $wpdb->esc_like($search_term) . '%';
+      if(!empty($groups)) {
+        $searcheventquery .= $group_condition;
+        $query_params = array_merge($query_params, $groups);
+      }
+    }
+
+    if((!empty($_POST['event'])) xor empty($types)) {
+      $searcheventquery .= "
+        UNION ";
+    }
+
+    if(!(!empty($_POST['event']) && empty($types))) {
+      $searcheventquery .= "
+        SELECT DISTINCT
+        p.ID, p.post_author, p.post_date, p.post_date_gmt, p.post_content, p.post_title,
+        p.post_excerpt, p.post_status, p.comment_status, p.ping_status,
+        p.post_password, p.post_name, p.to_ping, p.pinged, p.post_modified,
+        p.post_modified_gmt, p.post_content_filtered, p.post_parent, p.guid,
+        p.menu_order, p.post_type, p.post_mime_type, p.comment_count
+        FROM {$wpdb->prefix}posts p
+        LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object a ON p.ID = a.object_id
+        WHERE (p.post_title LIKE %s
+        OR p.post_content LIKE %s)
+        AND p.post_status = 'publish'
+        AND p.ID NOT IN ({$myrowsquery_safe})
+        AND p.post_type != 'tribe_events'";
+      $query_params[] = '%' . $wpdb->esc_like($search_term) . '%';
+      $query_params[] = '%' . $wpdb->esc_like($search_term) . '%';
+      if(!empty($types)) {
+        $searcheventquery .= $type_condition;
+        $query_params = array_merge($query_params, $types);
+      }
+      if(!empty($groups)) {
+        $searcheventquery .= $group_condition;
+        $query_params = array_merge($query_params, $groups);
+      }
+    }
+
     $searcheventquery .= "
       ORDER BY post_date DESC
-      LIMIT 0 , 30";
+      LIMIT 30";
 
-    //echo $searcheventquery;
+    // Prepare and execute query safely
+    if(!empty($query_params)) {
+      $searcheventquery = $wpdb->prepare($searcheventquery, $query_params);
+    }
     $eventposts = $wpdb->get_results($searcheventquery);
+
     if ( $eventposts ){
       foreach( $eventposts as $post ){
-			 	setup_postdata($post);
-				//echo $post->post_title;
+        setup_postdata($post);
         get_template_part('template-parts/item-search-excerpt');
       } wp_reset_postdata();
     } else {
-      echo 'Geen pagina\'s gevonden met de zoekterm \''.$s.'\'';
+      echo 'Geen pagina\'s gevonden met de zoekterm \''.esc_html($search_term).'\'';
     }
      ?>
 		</div>

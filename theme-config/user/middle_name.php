@@ -1,6 +1,8 @@
+<?php
 /**
- * File adding middel name field for every user
+ * File adding middle name field for every user
  **/
+
 
 add_action( 'show_user_profile', 'soli_show_extra_profile_fields_middle_name' );
 add_action( 'edit_user_profile', 'soli_show_extra_profile_fields_middle_name' );
@@ -8,11 +10,11 @@ add_action( 'edit_user_profile', 'soli_show_extra_profile_fields_middle_name' );
 function soli_show_extra_profile_fields_middle_name( $user ) {
 	$middlename = get_the_author_meta( 'middle_name', $user->ID );
 	?>
-	<h3><?php esc_html_e( 'Personal Information', 'crf' ); ?></h3>
+	<h3><?php esc_html_e( 'Extra personal info', 'crf' ); ?></h3>
 
 	<table class="form-table">
 		<tr>
-			<th><label for="middle_name"><?php esc_html_e( 'Middle name', 'crf' ); ?></label></th>
+			<th><label for="middle_name"><?php esc_html_e( 'Tussenvoegsel', 'crf' ); ?></label></th>
 			<td>
 				<input type="text"
 			       id="middle_name"

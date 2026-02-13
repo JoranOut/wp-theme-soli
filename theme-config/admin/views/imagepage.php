@@ -16,8 +16,13 @@
   // See if the user has posted us some information
   // If they did, this hidden field will be set to 'Y'
   if( isset($_POST[ $hidden_default_field_name ]) && $_POST[ $hidden_default_field_name ] == 'Y' ) {
-      // Read their posted value
-      $opt_default_val = $_POST[ $data_default_field_name ];
+      // Verify nonce
+      if ( !isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'default-imaging-settings-group-options') ) {
+          wp_die( __('Security check failed.') );
+      }
+
+      // Read and sanitize their posted value
+      $opt_default_val = sanitize_text_field($_POST[ $data_default_field_name ]);
 
       // Save the posted value in the database
       update_option( $opt_default_name, $opt_default_val );
@@ -55,7 +60,7 @@
               foreach ($groups as $group) {
                 ?>
                 <tr valign="top">
-                <th scope="row"><?php echo $group[1];?></th>
+                <th scope="row"><?php echo esc_html($group[1]);?></th>
                 <td><?php
                 for ($i=0; $i < 5; $i++) {?>
                   <td><?php default_image_print_box($group[0],$group[2][$i]); ?></td>

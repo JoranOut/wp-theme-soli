@@ -39,10 +39,10 @@
     </div>
     <div class="profilegroups"><?php
     global $wpdb;
-    $results = $wpdb->get_results('SELECT DISTINCT '.$wpdb->prefix.'uam_accessgroups.groupname FROM '.$wpdb->prefix.'uam_accessgroup_to_object INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id ='.$current_user->ID.' AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3');
+    $results = $wpdb->get_results($wpdb->prepare('SELECT DISTINCT '.$wpdb->prefix.'uam_accessgroups.groupname FROM '.$wpdb->prefix.'uam_accessgroup_to_object INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = %d AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3', intval($current_user->ID)));
     if($results!=null){
       foreach ($results as $res) {
-        echo '<span>'.($res->groupname).'</span>';
+        echo '<span>'.esc_html($res->groupname).'</span>';
       }
     } ?>
     </div>
@@ -50,7 +50,8 @@
   <div class="header files">
     <ul>
       <li><a href="<?php echo wp_get_attachment_url(9344); ?>">Statuten</a></li>
-      <li><a href="<?php echo wp_get_attachment_url(9352); ?>">Huishoudelijk reglement</a></li>
+      <li><a href="<?php echo wp_get_attachment_url(11207); ?>">Huishoudelijk reglement</a></li>
+      <li><a href="<?php echo wp_get_attachment_url(11225); ?>">Vijfjarenplan</a></li>
     </ul>
   </div>
   <h1 class="container_title">Mijn Mededelingen</h1>
@@ -83,11 +84,11 @@
     <?php
       global $wpdb;
       $posts_avecGroupe = array();
-      $posts_avecGroupe = $wpdb->get_col("SELECT T2.object_id FROM wp_uam_accessgroup_to_object T1
-                                        INNER JOIN wp_uam_accessgroup_to_object T2 ON T1.group_id=T2.group_id
-                                        INNER JOIN wp_posts ON wp_posts.ID=T2.object_id
-                                        WHERE T1.object_id = '".$user_id."' AND T2.object_type='post'
-                                        ORDER BY post_date DESC LIMIT 16");
+      $posts_avecGroupe = $wpdb->get_col($wpdb->prepare("SELECT T2.object_id FROM ".$wpdb->prefix."uam_accessgroup_to_object T1
+                                        INNER JOIN ".$wpdb->prefix."uam_accessgroup_to_object T2 ON T1.group_id=T2.group_id
+                                        INNER JOIN ".$wpdb->prefix."posts ON ".$wpdb->prefix."posts.ID=T2.object_id
+                                        WHERE T1.object_id = %d AND T2.object_type='post'
+                                        ORDER BY post_date DESC LIMIT 16", intval($user_id)));
       $posts = get_posts( array('post__in'=>$posts_avecGroupe, "numberposts"=>16));
       if($posts){
         foreach ($posts as $post){
@@ -112,11 +113,13 @@
     <div class="move">
       <?php
       $user_id = wp_get_current_user()->ID;
-
-      $posts = tribe_get_events(array(
-          'posts_per_page' => 8,
-          'start_date' => date('Y-m-d H:i:s')
-      ));
+      
+      if (function_exists( 'tribe_event_in_category' )){
+        $posts = tribe_get_events(array(
+            'posts_per_page' => 8,
+            'start_date' => date('Y-m-d H:i:s')
+        ));
+      }
 
       global $post;
       if($posts){
