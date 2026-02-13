@@ -3,7 +3,8 @@
  * template for header menu
  */
 
- foreach (wp_get_nav_menu_items('main_menu','ARRAY_A') as $menu_title) {
+ $menu_items = wp_get_nav_menu_items('main_menu','ARRAY_A');
+ foreach (($menu_items ?: array()) as $menu_title) {
    $children = get_pages(
      array(
        'parent' => $menu_title->object_id,

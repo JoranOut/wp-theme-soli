@@ -38,11 +38,13 @@
       <img class="white" src="<?php bloginfo('template_url'); ?>/assets/img/user_white.svg" />
     </div>
     <div class="profilegroups"><?php
-    global $wpdb;
-    $results = $wpdb->get_results($wpdb->prepare('SELECT DISTINCT '.$wpdb->prefix.'uam_accessgroups.groupname FROM '.$wpdb->prefix.'uam_accessgroup_to_object INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = %d AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3', intval($current_user->ID)));
-    if($results!=null){
-      foreach ($results as $res) {
-        echo '<span>'.esc_html($res->groupname).'</span>';
+    if ( soli_is_uam_active() ) {
+      global $wpdb;
+      $results = $wpdb->get_results($wpdb->prepare('SELECT DISTINCT '.$wpdb->prefix.'uam_accessgroups.groupname FROM '.$wpdb->prefix.'uam_accessgroup_to_object INNER JOIN '.$wpdb->prefix.'uam_accessgroups ON '.$wpdb->prefix.'uam_accessgroups.ID = '.$wpdb->prefix.'uam_accessgroup_to_object.group_id WHERE '.$wpdb->prefix.'uam_accessgroup_to_object.object_id = %d AND NOT '.$wpdb->prefix.'uam_accessgroup_to_object.group_id=3', intval($current_user->ID)));
+      if($results!=null){
+        foreach ($results as $res) {
+          echo '<span>'.esc_html($res->groupname).'</span>';
+        }
       }
     } ?>
     </div>
@@ -52,8 +54,17 @@
       <li><a href="<?php echo wp_get_attachment_url(9344); ?>">Statuten</a></li>
       <li><a href="<?php echo wp_get_attachment_url(11207); ?>">Huishoudelijk reglement</a></li>
       <li><a href="<?php echo wp_get_attachment_url(11225); ?>">Vijfjarenplan</a></li>
+      <li><a class="external-link" href="https://trello.com/invite/b/5e3b27c8fabbb814385142e0/ATTI405e28a387449df10898f07017b7ddcb8AF541E2/verenigingstaken-soli" target="_blank" rel="noopener">Taken overzicht</a></li>
     </ul>
   </div>
+  <details class="header collapsible">
+    <summary>Vertrouwenspersonen</summary>
+    <p>Soli is lid van het initiatief 'in veilige handen'. Je kan altijd natuurlijk altijd met je problemen bij het bestuur terecht. Mocht dit toch niet veilig voelen, kan je contact opnemen met onze vertrouwenspersonen:</p>
+    <ul>
+      <li><a href="mailto:awieleman@gmail.com">Annemieke Wieleman (awieleman@gmail.com)</a></li>
+      <li><a href="mailto:Rianschelvis@gmail.com">Rian Schelvis (Rianschelvis@gmail.com)</a></li>
+    </ul>
+  </details>
   <h1 class="container_title">Mijn Mededelingen</h1>
   <div class="item_container">
     <div class="move">
@@ -82,14 +93,18 @@
   <div class="item_container">
     <div class="move">
     <?php
-      global $wpdb;
-      $posts_avecGroupe = array();
-      $posts_avecGroupe = $wpdb->get_col($wpdb->prepare("SELECT T2.object_id FROM ".$wpdb->prefix."uam_accessgroup_to_object T1
-                                        INNER JOIN ".$wpdb->prefix."uam_accessgroup_to_object T2 ON T1.group_id=T2.group_id
-                                        INNER JOIN ".$wpdb->prefix."posts ON ".$wpdb->prefix."posts.ID=T2.object_id
-                                        WHERE T1.object_id = %d AND T2.object_type='post'
-                                        ORDER BY post_date DESC LIMIT 16", intval($user_id)));
-      $posts = get_posts( array('post__in'=>$posts_avecGroupe, "numberposts"=>16));
+      if ( soli_is_uam_active() ) {
+        global $wpdb;
+        $posts_avecGroupe = array();
+        $posts_avecGroupe = $wpdb->get_col($wpdb->prepare("SELECT T2.object_id FROM ".$wpdb->prefix."uam_accessgroup_to_object T1
+                                          INNER JOIN ".$wpdb->prefix."uam_accessgroup_to_object T2 ON T1.group_id=T2.group_id
+                                          INNER JOIN ".$wpdb->prefix."posts ON ".$wpdb->prefix."posts.ID=T2.object_id
+                                          WHERE T1.object_id = %d AND T2.object_type='post'
+                                          ORDER BY post_date DESC LIMIT 16", intval($user_id)));
+        $posts = get_posts( array('post__in'=>$posts_avecGroupe, "numberposts"=>16));
+      } else {
+        $posts = get_posts(array("numberposts" => 16));
+      }
       if($posts){
         foreach ($posts as $post){
           setup_postdata($post);

@@ -56,7 +56,7 @@
  */
 function load_styles() {
   wp_enqueue_style('meyer-reset', get_template_directory_uri().'/meyer-reset.css', false, '5.2.0', 'all');
-  wp_enqueue_style('style', get_template_directory_uri().'/style.css', false, '5.2.2.2'. 'all');
+  wp_enqueue_style('style', get_template_directory_uri().'/style.css', false, '5.2.3', 'all');
 }
 
 /**
@@ -191,6 +191,16 @@ function get_event_posts(){
 
 add_post_type_support( 'page', 'excerpt' );
 
+
+/**
+ * Check if User Access Manager plugin is active
+ */
+function soli_is_uam_active() {
+  if ( ! function_exists( 'is_plugin_active' ) ) {
+    include_once ABSPATH . 'wp-admin/includes/plugin.php';
+  }
+  return is_plugin_active( 'user-access-manager/user-access-manager.php' );
+}
 
 /**
  * load function file for search element

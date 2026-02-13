@@ -20,6 +20,10 @@ function my_custom_admin_css() {
   echo '</style>';
 }
 
+function soli_theme_admin_page(){
+  soli_theme_admin_frontpage_page();
+}
+
 function soli_theme_admin_frontpage_page(){
     include 'views/frontpage.php';
 }
@@ -33,9 +37,9 @@ function soli_table_exists(){
   return true;
 }
 
-function create_soli_table(){
-  define("ABSPATH");
+add_action( 'after_switch_theme', 'create_soli_table' );
 
+function create_soli_table(){
   global $wpdb;
   $table_name = $wpdb->prefix . "soli_imaging";
   $charset_collate = $wpdb->get_charset_collate();
@@ -66,6 +70,9 @@ function get_soli_fp_info(){
 }
 
 function get_soli_groups() {
+  if ( ! soli_is_uam_active() ) {
+    return array();
+  }
   global $wpdb;
   $table_name = $wpdb->prefix . "uam_accessgroups";
   $table_name_second = $wpdb->prefix . "soli_imaging";
@@ -153,7 +160,11 @@ function standard_imaging($post, $size = 'large'){
   }
   if(!$post){
     $fp_info = get_soli_fp_info();
-    return wp_get_attachment_image_src($fp_info['frontpage_background'],$size)[0];
+    $src = wp_get_attachment_image_src($fp_info['frontpage_background'] ?? 0, $size);
+    return $src ? $src[0] : get_template_directory_uri().'/assets/img/screenshot.png';
+  }
+  if(empty($prep)){
+    return get_template_directory_uri().'/assets/img/screenshot.png';
   }
   for ($i=0; $i < count($prep); $i++) {
     if(check_preg($prep[$i][1],$post->post_title)||check_preg($prep[$i][1],$post->post_content))
@@ -172,6 +183,9 @@ function check_preg($preg_str, $content){
 function take_image($group, $postid, $size = 'large'){
   global $prep;
   if(!$group)$group=0;
+  if(empty($prep) || !isset($prep[$group][2])){
+    return get_template_directory_uri().'/assets/img/screenshot.png';
+  }
   $ii = 0;
   if(count($prep[$group][2])){
     $ii = $postid % count($prep[$group][2]);
@@ -180,7 +194,7 @@ function take_image($group, $postid, $size = 'large'){
   if($image){
     return $image[0];
   } else {
-    $image = wp_get_attachment_image_src($prep[0][2][0],$size);
+    $image = isset($prep[0][2][0]) ? wp_get_attachment_image_src($prep[0][2][0],$size) : null;
     if($image){
       return $image[0];
     } else {

@@ -92,7 +92,10 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
     $searcheventquery = '';
     $query_params = array();
 
+    $uam_active = soli_is_uam_active();
+
     if(!empty($_POST['event']) || empty($types)) {
+      $uam_join_event = $uam_active ? "LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object a ON p.ID = a.object_id" : "";
       $searcheventquery = "
         SELECT DISTINCT
         p.ID, p.post_author, m.meta_value as post_date, p.post_date_gmt,
@@ -102,7 +105,7 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
         p.post_content_filtered, p.post_parent, p.guid, p.menu_order,
         p.post_type, p.post_mime_type, p.comment_count
         FROM {$wpdb->prefix}posts p
-        LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object a ON p.ID = a.object_id
+        {$uam_join_event}
         INNER JOIN {$wpdb->prefix}postmeta m ON p.ID = m.post_id
         WHERE (p.post_title LIKE %s
         OR p.post_content LIKE %s)
@@ -112,7 +115,7 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
         AND p.ID NOT IN ({$myrowsquery_safe})";
       $query_params[] = '%' . $wpdb->esc_like($search_term) . '%';
       $query_params[] = '%' . $wpdb->esc_like($search_term) . '%';
-      if(!empty($groups)) {
+      if(!empty($groups) && $uam_active) {
         $searcheventquery .= $group_condition;
         $query_params = array_merge($query_params, $groups);
       }
@@ -124,6 +127,7 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
     }
 
     if(!(!empty($_POST['event']) && empty($types))) {
+      $uam_join_post = $uam_active ? "LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object a ON p.ID = a.object_id" : "";
       $searcheventquery .= "
         SELECT DISTINCT
         p.ID, p.post_author, p.post_date, p.post_date_gmt, p.post_content, p.post_title,
@@ -132,7 +136,7 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
         p.post_modified_gmt, p.post_content_filtered, p.post_parent, p.guid,
         p.menu_order, p.post_type, p.post_mime_type, p.comment_count
         FROM {$wpdb->prefix}posts p
-        LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object a ON p.ID = a.object_id
+        {$uam_join_post}
         WHERE (p.post_title LIKE %s
         OR p.post_content LIKE %s)
         AND p.post_status = 'publish'
@@ -144,7 +148,7 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
         $searcheventquery .= $type_condition;
         $query_params = array_merge($query_params, $types);
       }
-      if(!empty($groups)) {
+      if(!empty($groups) && $uam_active) {
         $searcheventquery .= $group_condition;
         $query_params = array_merge($query_params, $groups);
       }

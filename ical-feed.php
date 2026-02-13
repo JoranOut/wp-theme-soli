@@ -8,19 +8,23 @@
  */
 
 if (ISSET($_GET["i"])&&$_GET["i"]!=''&&ISSET($_GET["h"])&&$_GET["h"]!=''&&$_GET['o']==1) {
-  global $wpdb;
-  $userid = ($id === null)? wp_get_current_user()->ID : $id;
-  $myrowsquery = "SELECT distinct t.ID FROM wp_uam_accessgroup_to_object q
-    INNER JOIN wp_uam_accessgroup_to_object w ON q.group_id = w.group_id AND q.object_id = 632
-    LEFT JOIN wp_uam_accessgroup_to_object r ON w.object_id = r.object_id
-    INNER JOIN wp_posts t ON r.object_id = t.ID
-    INNER JOIN wp_postmeta m on t.ID = m.post_id
-    WHERE t.post_parent = 0 AND NOT q.group_id = 3 AND t.post_type = 'tribe_events'
-    AND m.meta_key = '_EventStartDate' and meta_value >= NOW() ORDER BY `r`.`object_id` DESC";
-  $tmpoutput = $wpdb->get_results($wpdb->prepare($myrowsquery,"OBJECT"));
-  $output = array_map(function ($entry) {
-    return (int) $entry->ID;
-  }, $tmpoutput);
+  if ( soli_is_uam_active() ) {
+    global $wpdb;
+    $userid = ($id === null)? wp_get_current_user()->ID : $id;
+    $myrowsquery = "SELECT distinct t.ID FROM {$wpdb->prefix}uam_accessgroup_to_object q
+      INNER JOIN {$wpdb->prefix}uam_accessgroup_to_object w ON q.group_id = w.group_id AND q.object_id = 632
+      LEFT JOIN {$wpdb->prefix}uam_accessgroup_to_object r ON w.object_id = r.object_id
+      INNER JOIN {$wpdb->prefix}posts t ON r.object_id = t.ID
+      INNER JOIN {$wpdb->prefix}postmeta m on t.ID = m.post_id
+      WHERE t.post_parent = 0 AND NOT q.group_id = 3 AND t.post_type = 'tribe_events'
+      AND m.meta_key = '_EventStartDate' and meta_value >= NOW() ORDER BY `r`.`object_id` DESC";
+    $tmpoutput = $wpdb->get_results($wpdb->prepare($myrowsquery,"OBJECT"));
+    $output = array_map(function ($entry) {
+      return (int) $entry->ID;
+    }, $tmpoutput);
+  } else {
+    $output = array();
+  }
   $events = tribe_get_events(array(
     'start_date' => date('Y-m-d 00:00:00'),
     'post__in' => $output

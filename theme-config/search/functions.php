@@ -1,5 +1,8 @@
 <?php
 function get_myrows($id = null){
+  if ( ! soli_is_uam_active() ) {
+    return array();
+  }
   global $wpdb;
   $userid = intval(($id === null) ? wp_get_current_user()->ID : $id);
   $myrowsquery = $wpdb->prepare("SELECT r.object_id
@@ -21,6 +24,9 @@ function get_myrows($id = null){
 }
 
 function get_uam_groups_by_ID($id){
+  if ( ! soli_is_uam_active() ) {
+    return "";
+  }
   global $wpdb;
   $groups = array();
   $results = $wpdb->get_results($wpdb->prepare('SELECT * FROM '.$wpdb->prefix.'uam_accessgroup_to_object A INNER JOIN '.$wpdb->prefix.'uam_accessgroups B on A.group_id = B.ID WHERE object_id = %d', intval($id)));

@@ -2018,6 +2018,71 @@ body.login > #login > #nav {
   transform: translateY(-50%);
 }
 
+.personal .header.files li a.external-link::after {
+  content: '\f103';
+  font-family: dashicons;
+  background: none;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.personal .header.collapsible {
+  background: rgba(255, 255, 255, 1);
+  padding: 0;
+  cursor: pointer;
+}
+
+.personal .header.collapsible summary {
+  padding: 17px 27px 13px;
+  font-weight: bold;
+  list-style: none;
+  position: relative;
+  padding-left: 50px;
+}
+
+.personal .header.collapsible summary::after {
+  content: '\f140';
+  font-family: dashicons;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  transition: transform .3s;
+}
+
+.personal .header.collapsible[open] summary::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.personal .header.collapsible p,
+.personal .header.collapsible ul {
+  padding: 0 27px 10px 50px;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.personal .header.collapsible ul {
+  padding-bottom: 17px;
+  display: block;
+  list-style: disc;
+}
+
+.personal .header.collapsible ul li {
+  border-bottom: none;
+}
+
+.personal .header.collapsible a {
+  color: rgba(129, 42, 68, 1);
+  text-decoration: none;
+}
+
+.personal .header.collapsible a:hover {
+  text-decoration: underline;
+}
+
 .personal .container_title {
   color: rgba(255, 255, 255, 1);
   font-size: 3.4rem;

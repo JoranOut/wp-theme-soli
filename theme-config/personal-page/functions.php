@@ -23,12 +23,9 @@ function get_news_widget(){
     exit("We are not for hack");
   }
 
-  /*FILTER ON UAM GROUPS IF UAM IS ACTIVATED*/
-  include_once( ABSPATH . 'wp-admin/includes/user-access-manager.php' );
-  $plugin_active = is_plugin_active( 'user-access-manager/user-access-manager.php' );
   $user_id = wp_get_current_user()->ID;
 
-  if($plugin_active){
+  if( soli_is_uam_active() ){
     global $wpdb;
     $posts_avecGroupe = array();
     $posts_avecGroupe = $wpdb->get_col($wpdb->prepare(
@@ -137,6 +134,11 @@ function get_message_widget(){
 
   if(isset($_REQUEST['group'])){
     echo '<li><a onclick="document.getElementById(\'messagegroups\').style.display = \'block\'; document.getElementById(\'messages\').style.display = \'none\';"><< terug</a></li>';
+
+    if ( ! soli_is_uam_active() ) {
+      die();
+    }
+
     global $wpdb;
     $group_id = intval($_REQUEST['group']);
     $current_user_id = intval(wp_get_current_user()->ID);
@@ -189,6 +191,10 @@ function get_solo_message_widget(){
   }
 
   echo '<li><a onclick="document.getElementById(\'messages\').style.display = \'block\'; document.getElementById(\'solomessage\').style.display = \'none\';"><< terug</a></li>';
+
+  if ( ! soli_is_uam_active() ) {
+    die();
+  }
 
   if(isset($_REQUEST['messageid'])){
     global $wpdb;
@@ -244,6 +250,10 @@ function refresh_message_widget(){
     exit("We are not for hack");
   }
 
+  if ( ! soli_is_uam_active() ) {
+    die();
+  }
+
   $current_user = wp_get_current_user();
   $current_user_id = intval($current_user->ID);
   global $wpdb;
@@ -285,6 +295,11 @@ add_action("wp_ajax_nopriv_any_message","any_message");
 function any_message(){
   if (!wp_verify_nonce($_REQUEST['nonce'],"any_message_nonce")) {
     exit("We are not for hack");
+  }
+
+  if ( ! soli_is_uam_active() ) {
+    echo 0;
+    die();
   }
 
   $current_user = wp_get_current_user();

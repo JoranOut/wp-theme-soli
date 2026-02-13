@@ -30,9 +30,6 @@ function get_agenda_widget(){
     exit("We are not for hack");
   }
 
-  /*FILTER ON UAM GROUPS IF UAM IS ACTIVATED*/
-  include_once( ABSPATH . 'wp-admin/includes/user-access-manager.php' );
-  $plugin_active = is_plugin_active( 'user-access-manager/user-access-manager.php' );
   $user_id = wp_get_current_user()->ID;
 
   $posts = tribe_get_events(array(
