@@ -1,8 +1,21 @@
 {
+	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
 	"core": null,
-	"themes": ["."],
+	"phpVersion": "8.4",
+	"themes": [
+		"."
+	],
 	"plugins": [],
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true,
+		"WP_DEBUG_DISPLAY": true,
+		"SCRIPT_DEBUG": true
+	},
+	"mappings": {
+		"wp-content/debug.log": "./debug.log"
+	},
 	"lifecycleScripts": {
-		"afterStart": "npx wp-env run cli -- wp theme activate wp-theme-soli"
+		"afterStart": "wp-env run cli -- wp theme activate wp-theme-soli && wp-env run cli -- wp option update blogname 'Muziekvereniging Soli' && wp-env run cli -- wp option update blogdescription 'Driehuis sinds 1909' && wp-env run tests-cli -- wp theme activate wp-theme-soli && wp-env run tests-cli -- wp option update blogname 'Muziekvereniging Soli' && wp-env run tests-cli -- wp option update blogdescription 'Driehuis sinds 1909'"
 	}
 }

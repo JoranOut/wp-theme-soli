@@ -1,0 +1,22 @@
+{
+  "name": "wp-theme-soli",
+  "version": "0.0.1",
+  "description": "Main public-facing theme for soli.nl",
+  "author": "Muziekvereniging Soli",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "test:e2e": "wp-scripts test-playwright",
+    "test:e2e:watch": "wp-scripts test-playwright --watch",
+    "test:e2e:debug": "wp-scripts test-playwright --debug",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:reset": "wp-env clean all && wp-env start",
+    "publish": "node ./publish.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@wordpress/env": "^10.13.0",
+    "@wordpress/scripts": "^31.0.0",
+    "archiver": "^7.0.0"
+  }
+}

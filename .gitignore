@@ -1,0 +1,19 @@
+# wp-env
+debug.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Node (if using build tools)
+node_modules/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

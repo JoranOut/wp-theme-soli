@@ -253,3 +253,27 @@ require_once get_parent_theme_file_path('/tribe-events/bookings.php');
  * load function file for reserveer plugin tribe_events
  */
 require_once get_parent_theme_file_path('/theme-config/user/middle_name.php');
+
+/**
+ * Initialize GitHub theme updater.
+ */
+function soli_theme_github_updater() {
+	include_once get_template_directory() . '/updater.php';
+
+	if ( class_exists( 'Soli\\ThemeSoli\\WP_GitHub_Theme_Updater' ) ) {
+		$config = array(
+			'slug'         => 'wp-theme-soli',
+			'api_url'      => 'https://api.github.com/repos/JoranOut/wp-theme-soli',
+			'raw_url'      => 'https://raw.githubusercontent.com/JoranOut/wp-theme-soli/master',
+			'github_url'   => 'https://github.com/JoranOut/wp-theme-soli',
+			'zip_url'      => 'https://github.com/JoranOut/wp-theme-soli/releases/latest/download/wp-theme-soli.zip',
+			'requires'     => '6.0.0',
+			'tested'       => '6.7.0',
+			'requires_php' => '8.4',
+			'readme'       => 'README.md',
+		);
+
+		new \Soli\ThemeSoli\WP_GitHub_Theme_Updater( $config );
+	}
+}
+add_action( 'init', 'soli_theme_github_updater' );
