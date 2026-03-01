@@ -7,6 +7,7 @@
  * @version 2.0
  */
   get_header();
+  global $post, $myrows;
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>

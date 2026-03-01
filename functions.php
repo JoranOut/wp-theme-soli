@@ -22,6 +22,7 @@
  remove_action( 'wp_head', 'feed_links', 2 );
 
  $current_user = wp_get_current_user();
+ global $role_name;
  $role_name = null;
  if ( $current_user && $current_user->exists() && ! empty( $current_user->roles ) ) {
     $role_name = $current_user->roles[0];
@@ -166,8 +167,9 @@ function get_other_posts(){
 function get_event_posts(){
   global $wpdb;
   global $post;
-  $userid = wp_get_current_user()->ID;
   global $myrows;
+  global $role_name;
+  $userid = wp_get_current_user()->ID;
   if($role_name==="lid"||$role_name==="author"||!is_user_logged_in()){
     $myrows = get_myrows();
   }

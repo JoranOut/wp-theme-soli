@@ -46,11 +46,19 @@ if ( ! is_user_logged_in() || in_array( $role_name, array( 'lid', 'author' ), tr
     $social_post["post_content"] = "Klik op de link of afbeelding om meer te zien!";
     $social_post["post_image"] = get_soli_post_image(null,'large');
   } else {
-    $social_post["guid"] = get_permalink(get_post($social_post["id"]));
-    $social_post["post_title"] = get_post($social_post["id"])->post_title;
-    $social_post["post_image"] = get_soli_post_image(get_post($social_post["id"]),'large');
-    $social_content = substr(wp_strip_all_tags(get_post($social_post["id"])->post_content), 0, 65);
-    $social_post["post_content"] = substr($social_content, 0, strrpos($social_content, ' '))."...";
+    $social_post_obj = get_post($social_post["id"]);
+    if ($social_post_obj) {
+      $social_post["guid"] = get_permalink($social_post_obj);
+      $social_post["post_title"] = $social_post_obj->post_title;
+      $social_post["post_image"] = get_soli_post_image($social_post_obj,'large');
+      $social_content = substr(wp_strip_all_tags($social_post_obj->post_content), 0, 65);
+      $social_post["post_content"] = substr($social_content, 0, strrpos($social_content, ' '))."...";
+    } else {
+      $social_post["post_title"] = "SOLI.nl";
+      $social_post["guid"] = home_url($_SERVER["REQUEST_URI"]);
+      $social_post["post_content"] = "Klik op de link of afbeelding om meer te zien!";
+      $social_post["post_image"] = get_soli_post_image(null,'large');
+    }
   }
   $social_post["id"]='';
 ?>

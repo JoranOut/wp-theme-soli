@@ -1,6 +1,6 @@
 <div class="wrap-excerpt" style="position: relative">
   <?php
-  global $wpdb;
+  global $wpdb, $myrows;
 	$page_month_date    = new DateTime(tribe_get_month_view_date());
 	$page_month_baseurl = tribe_get_gridview_link( false );
   $page_month_baseurl = substr($page_month_baseurl,0,strlen($page_month_baseurl)-6);
