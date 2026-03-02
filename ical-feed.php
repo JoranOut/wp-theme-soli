@@ -7,7 +7,7 @@
  * @version 2.0
  */
 
-if (ISSET($_GET["i"])&&$_GET["i"]!=''&&ISSET($_GET["h"])&&$_GET["h"]!=''&&$_GET['o']==1) {
+if (ISSET($_GET["i"])&&$_GET["i"]!=''&&ISSET($_GET["h"])&&$_GET["h"]!=''&&isset($_GET['o'])&&$_GET['o']==1) {
   if ( soli_is_uam_active() ) {
     global $wpdb;
     $userid = ($id === null)? wp_get_current_user()->ID : $id;
