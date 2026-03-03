@@ -38,8 +38,7 @@ $classes = $is_uitgaanstip ? 'post-excerpt-template tip' : 'post-excerpt-templat
                 wrap_element( get_the_time( 'd.m.y' ), 'em' );
 
             elseif ( $is_event ) :
-                // Fallback: if event_date is missing, avoid PHP notices
-                $raw_event_date = isset( $post->event_date ) ? $post->event_date : '';
+                $raw_event_date = isset( $post->event_date ) ? $post->event_date : get_post_meta( $post->ID, '_EventStartDate', true );
                 $date_ts = $raw_event_date ? strtotime( $raw_event_date ) : false;
 
                 if ( $date_ts ) {
