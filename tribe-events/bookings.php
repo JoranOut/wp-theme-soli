@@ -107,7 +107,7 @@ add_action('wp_ajax_nopriv_db_get_participants', 'db_get_participants');
 add_action('wp_ajax_db_get_participants', 'db_get_participants');
 function db_get_participants()
 {
-  if (!wp_verify_nonce($_REQUEST['nonce'], "booking")) {
+  if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], "booking")) {
     exit("Security check failed");
   }
 
@@ -164,7 +164,7 @@ add_action('wp_ajax_nopriv_get_booking_users', 'get_booking_users');
 add_action('wp_ajax_get_booking_users', 'get_booking_users');
 function get_booking_users()
 {
-  if (!wp_verify_nonce($_REQUEST['nonce'], "booking")) {
+  if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], "booking")) {
     exit("We are not for hack");
   }
 
@@ -182,7 +182,7 @@ add_action('wp_ajax_nopriv_get_booking_data', 'get_booking_data');
 add_action('wp_ajax_get_booking_data', 'get_booking_data');
 function get_booking_data()
 {
-  if (!wp_verify_nonce($_REQUEST['nonce'], "booking")) {
+  if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], "booking")) {
     exit("We are not for hack");
   }
 
@@ -195,7 +195,7 @@ add_action('wp_ajax_nopriv_set_booking_participant', 'set_booking_participant');
 add_action('wp_ajax_set_booking_participant', 'set_booking_participant');
 function set_booking_participant()
 {
-  if (!wp_verify_nonce($_REQUEST['nonce'], "booking")) {
+  if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], "booking")) {
     exit("We are not for hack");
   }
 
@@ -233,7 +233,7 @@ add_action('wp_ajax_nopriv_delete_booking_participant', 'delete_booking_particip
 add_action('wp_ajax_delete_booking_participant', 'delete_booking_participant');
 function delete_booking_participant()
 {
-  if (!wp_verify_nonce($_REQUEST['nonce'], "booking")) {
+  if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], "booking")) {
     exit("We are not for hack");
   }
 

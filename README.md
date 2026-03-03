@@ -2,7 +2,7 @@
 
 ~Plugin Name: wp-theme-soli~
 
-~Current Version:1.3.0~
+~Current Version:1.3.1~
 
 Main public-facing WordPress theme for [soli.nl](https://soli.nl).
 
