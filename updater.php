@@ -95,6 +95,7 @@ class WP_GitHub_Theme_Updater {
 		$this->set_defaults();
 
 		add_filter( 'pre_set_site_transient_update_themes', array( $this, 'api_check' ) );
+		add_action( 'delete_site_transient_update_themes', array( $this, 'delete_transients' ) );
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
 		add_filter( 'http_request_args', array( $this, 'http_request_sslverify' ), 10, 2 );
 	}
@@ -136,6 +137,18 @@ class WP_GitHub_Theme_Updater {
 	 */
 	public function overrule_transients() {
 		return ( defined( 'WP_GITHUB_FORCE_UPDATE' ) && WP_GITHUB_FORCE_UPDATE );
+	}
+
+	/**
+	 * Clear cached GitHub data when WordPress clears its update transient.
+	 *
+	 * Fires when the user clicks "Check again" on the Updates page.
+	 *
+	 * @since 1.0
+	 */
+	public function delete_transients() {
+		delete_site_transient( md5( $this->config['slug'] ) . '_new_version' );
+		delete_site_transient( md5( $this->config['slug'] ) . '_github_data' );
 	}
 
 	/**
