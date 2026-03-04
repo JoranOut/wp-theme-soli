@@ -60,10 +60,11 @@ archive.on('entry', function(entry) {
 
 archive.pipe(output);
 
-// Zip with exclusions from .zipignore
+// Zip with exclusions from .zipignore, inside a folder matching the plugin name
 archive.glob('**/*', {
     cwd: __dirname,
-    ignore: ignorePatterns
-});
+    ignore: ignorePatterns,
+    dot: false
+}, { prefix: pluginName });
 
 archive.finalize();
