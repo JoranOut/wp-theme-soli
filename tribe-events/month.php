@@ -51,7 +51,8 @@
       function soli_month_get_post($events,$date = null){
         $output = array();
         foreach ($events as $event) {
-          if($date==null || substr($event->event_date,0,10)===$date){
+          $event_date = isset( $event->event_date ) ? $event->event_date : get_post_meta( $event->ID, '_EventStartDate', true );
+          if($date==null || substr($event_date,0,10)===$date){
             array_push($output,$event);
           }
         }
