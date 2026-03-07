@@ -5,7 +5,7 @@ $startTime = microtime(true);
 $fp_info = get_soli_fp_info();
 $image = wp_get_attachment_image_src($fp_info['frontpage_background'],'full');
 global $myrows;
-$myrowsquery = implode(", ",$myrows);
+$myrowsquery = implode(", ",$myrows ?? array());
 $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
  ?>
 
