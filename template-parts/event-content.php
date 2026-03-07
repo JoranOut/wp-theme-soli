@@ -19,7 +19,7 @@
 	</header>
 	<div class="page-content">
 		<h1 class="title font-resizer"><?php the_title(); ?></h1>
-		<?php if(!in_array($post->ID, $myrows)) { ?>
+		<?php if(!in_array($post->ID, $myrows ?? array())) { ?>
       <div class="single_event_content">
         <div class="map"
              style="background-image: linear-gradient(-135deg, rgba(170, 42, 42, .2) 0%, rgba(75, 33, 191, .2) 100%),
