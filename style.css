@@ -2,7 +2,7 @@
 Theme Name: Soli v2.0
 Author: Ian & Joran
 Description: Wordpress Theme for soli.nl
-Version: 1.3.6
+Version: 1.4.0
 Text Domain: soli-v2.0
 */
 
@@ -1534,6 +1534,142 @@ article:not(.tribe_events) .page-content ul {
   cursor: pointer;
 }
 
+/* Image Carousel */
+.image-carousel {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  max-width: 86.5rem;
+  height: 56vw;
+  max-height: 500px;
+  margin-left: -15px;
+  background: #000;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  height: 100%;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.carousel-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+.carousel-placeholder {
+  object-fit: cover;
+  filter: blur(20px);
+  transform: scale(1.2);
+}
+
+.carousel-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.carousel-full.loaded {
+  opacity: 1;
+}
+
+.carousel-prev,
+.carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  font-size: 2.5rem;
+  line-height: 1;
+  padding: 8px 14px;
+  cursor: pointer;
+  z-index: 2;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.carousel-prev:hover,
+.carousel-next:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.carousel-prev {
+  left: 10px;
+}
+
+.carousel-next {
+  right: 10px;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.carousel-dot.active {
+  background: #fff;
+}
+
+.carousel-counter {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  z-index: 2;
+}
+
+@media screen and (max-width: 600px) {
+  .carousel-prev,
+  .carousel-next {
+    font-size: 1.8rem;
+    padding: 6px 10px;
+  }
+
+  .carousel-counter {
+    font-size: 0.75rem;
+  }
+
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
 .page-content img.small {
   width: auto;
   height: auto;
@@ -1544,12 +1680,12 @@ article:not(.tribe_events) .page-content ul {
 .page .page-content > h2:not(.subtitle),
 .page .page-content > h4,
 .page .page-content > p:not(.image-wrapper),
-.page .page-content > div:not(.image-wrapper):not(.wrap-excerpt),
+.page .page-content > div:not(.image-wrapper):not(.image-carousel):not(.wrap-excerpt),
 .post .page-content > h1.title,
 .page .page-content > h2:not(.subtitle),
 .post .page-content > h4,
 .post .page-content > p:not(.image-wrapper),
-.post .page-content > div:not(.image-wrapper):not(.wrap-excerpt) {
+.post .page-content > div:not(.image-wrapper):not(.image-carousel):not(.wrap-excerpt) {
   margin-left: 50px;
 }
 

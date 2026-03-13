@@ -68,7 +68,7 @@ window.addEventListener('load', function () {
   if(texts){
     texts = texts.getElementsByTagName("div");
     for(var i=0; i < texts.length; i++){
-      if(isOverflown(texts[i])){
+      if(isOverflown(texts[i]) && !texts[i].closest(".image-carousel")){
         texts[i].innerHTML = replaceAll(texts[i].innerHTML, "&nbsp;"," ");
       }
     }
