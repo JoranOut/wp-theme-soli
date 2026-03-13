@@ -71,8 +71,8 @@ function load_scripts() {
     wp_enqueue_script('pers_js',get_template_directory_uri().'/assets/js/personal-page.js', false, '5.2.0', 'all');
   }
   if(!is_admin()){
-    wp_enqueue_script('page', get_template_directory_uri().'/assets/js/page.js', false, '5.2.0', 'all');
-    wp_enqueue_script('javascript', get_template_directory_uri().'/assets/js/header.js', false, '5.2.0', 'all');
+    wp_enqueue_script('page', get_template_directory_uri().'/assets/js/page.js', false, '1.4.0', 'all');
+    wp_enqueue_script('javascript', get_template_directory_uri().'/assets/js/header.js', false, '1.4.0', 'all');
     wp_localize_script( 'javascript', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
     wp_enqueue_script( 'javascript' );
   }
