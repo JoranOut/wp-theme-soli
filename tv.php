@@ -65,7 +65,7 @@ p         {padding-right: 150px; color: black; font-size: 2rem}
 
 if($events){
   foreach ($events as $post) {
-    if(get_post_meta($post->ID,"invisible_on_tv")[0]!=1){
+    if(get_post_meta($post->ID,"invisible_on_tv", true) != 1){
       //$html .= get_template_part( 'template-parts/tv', 'event' );
       $html .= get_tv_gallery($events, get_template_directory_uri().'/assets/img/applause-audience-band-196652.jpg',true,$post);
       array_push($chckimgs, get_soli_post_image($post,"large"));
@@ -75,7 +75,7 @@ if($events){
 
 if($tvs){
   foreach ($tvs as $post){
-    if(get_post_meta($post->ID,"invisible_on_tv")[0]!=1){
+    if(get_post_meta($post->ID,"invisible_on_tv", true) != 1){
       $html .= get_template_part( 'template-parts/tv', get_post_meta( $post->ID, 'tv_post_type', true ));
       array_push($chckimgs, get_soli_post_image($post,"large"));
     }

@@ -8,7 +8,7 @@
 
 get_header();
 
-if($_GET['s']=='' && $_POST['s']==''){
+if(empty($_GET['s']) && empty($_POST['s'])){
   get_template_part( 'template-parts/search', 'none' );
 } else {
   get_template_part( 'template-parts/search', 'results' );

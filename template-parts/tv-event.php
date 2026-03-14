@@ -31,6 +31,6 @@ $arraymaand = array(
     $dag = $arraydag[$date->format('w')];
     $maand = $arraymaand[$date->format('n')-1];
   ?>
-  <h2><?php echo $dag." ".$date->format('j')." ".$maand." ".$date->format('Y')." ".$date->format('H:i').", ".tribe_get_venue($events[$i]) ?></h2>
+  <h2><?php echo $dag." ".$date->format('j')." ".$maand." ".$date->format('Y')." ".$date->format('H:i').", ".tribe_get_venue($post) ?></h2>
   <p><?php echo limit_excerpt(wp_strip_all_tags($post->post_content),200);?></p>
 </div>
