@@ -149,6 +149,8 @@ class WP_GitHub_Theme_Updater {
 	public function delete_transients() {
 		delete_site_transient( md5( $this->config['slug'] ) . '_new_version' );
 		delete_site_transient( md5( $this->config['slug'] ) . '_github_data' );
+		$this->github_data = null;
+		$this->config['new_version'] = $this->get_new_version();
 	}
 
 	/**
