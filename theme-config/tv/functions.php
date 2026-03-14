@@ -214,7 +214,7 @@ function tv_calendar_gallery($items, $background, $post){
   $tv_gallery = "<div class=\"stage gallery\" style=\"background-image:url('".$background."')\"><div class=\"items\">";
   $tv_gallery .= "<h1>Agenda</h1>";
   foreach ($items as $item) {
-    if(get_post_meta($item->ID,"invisible_on_gallery")[0]!=1){
+    if(get_post_meta($item->ID,"invisible_on_gallery", true) != 1){
       $date = DateTime::createFromFormat('Y-m-d H:i:s',$item->event_date);
       $item_class = ($item->ID === $post->ID)?'item active':'item';
       $tv_gallery .= "<div class=\"".$item_class."\">";
