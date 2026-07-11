@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"color": {
+			"palette": [
+				{ "slug": "primary", "color": "#4B21BF", "name": "Primary (Purple)" },
+				{ "slug": "secondary", "color": "#AA2A2A", "name": "Secondary (Red)" },
+				{ "slug": "background", "color": "#fefefe", "name": "Background" },
+				{ "slug": "foreground", "color": "#000000", "name": "Foreground" }
+			],
+			"gradients": [
+				{
+					"slug": "soli",
+					"gradient": "linear-gradient(225deg, rgb(170, 42, 42) 0%, rgb(75, 33, 191) 100%)",
+					"name": "Soli"
+				}
+			]
+		},
+		"typography": {
+			"fontFamilies": [
+				{ "fontFamily": "'Lato', sans-serif", "slug": "lato", "name": "Lato" },
+				{ "fontFamily": "'Raleway', sans-serif", "slug": "raleway", "name": "Raleway" }
+			]
+		},
+		"layout": {
+			"contentSize": "835px",
+			"wideSize": "100%"
+		}
+	},
+	"styles": {
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--raleway)",
+			"fontSize": "62.5%"
+		},
+		"css": ".site-header { position: fixed; top: 0; left: 0; width: 100%; box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.2); z-index: 10; box-sizing: border-box; } .admin-bar .site-header { top: 32px; } @media screen and (max-width: 782px) { .admin-bar .site-header { top: 46px; } } .top-bar .top-bar-link a { color: rgba(255,255,255,0.8); text-decoration: none; margin: 5px 10px; display: block; cursor: pointer; } .top-bar .top-bar-link a:hover { color: #fff; } .top-bar-link--grow { flex: 1; } .page-header-cover { margin-top: 85px !important; margin-bottom: 0 !important; } .admin-bar .page-header-cover { margin-top: 117px !important; } @media screen and (max-width: 782px) { .admin-bar .page-header-cover { margin-top: 131px !important; } } .site-footer { margin-top: auto; } .site-footer a { color: rgba(255,255,255,0.8); } .site-footer a:hover { color: #fff; } .page-header-cover .wp-block-cover__inner-container { max-width: 835px; margin: 0 auto; width: 100%; }"
+	}
+}
