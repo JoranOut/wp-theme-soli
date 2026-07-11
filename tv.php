@@ -41,7 +41,7 @@ p         {padding-right: 150px; color: black; font-size: 2rem}
 .left.wide  {width:100vw;background-size:contain;background-color:black;background-repeat:no-repeat;}
 .left.contain {background-size:contain; background-repeat: no-repeat; background-position: center;}
 .right    {width:50vw; height:100vh; padding:10px 50px; float:right; position:relative}
-.stage    {width:100vw; height:100vh; position:absolute; top:0; left:0; display:none;}
+.stage    {width:100vw; height:100vh; position:absolute; top:0; left:0; display:none; background:#fff;}
 .load     {width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative; z-index:10; font-family:sans-serif; background:#fff;}
 .load .notes {font-size:2rem; letter-spacing:0.3em; animation:bounce 1.2s ease-in-out infinite;}
 @keyframes bounce {0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)}}
@@ -84,19 +84,27 @@ if($tvs){
 }
 
 $html .= "<script type=\"text/javascript\">
-function showSlide(el, current, nextUp) {
-  for (var j = 0; j < el.length; j++) {
-    if (j === current) {
-      el[j].style.display = \"block\";
-      el[j].style.zIndex = \"2\";
-    } else if (j === nextUp) {
-      el[j].style.display = \"block\";
-      el[j].style.zIndex = \"1\";
-    } else {
-      el[j].style.display = \"none\";
-      el[j].style.zIndex = \"0\";
-    }
+function preloadSlide(el, idx) {
+  // preload background images into browser cache without displaying the slide
+  var divs = el[idx].querySelectorAll('[style*=\"background-image\"]');
+  for (var k = 0; k < divs.length; k++) {
+    var match = divs[k].style.backgroundImage.match(/url\\(['\"]?([^'\"\\)]+)['\"]?\\)/);
+    if (match) { var img = new Image(); img.src = match[1]; }
   }
+}
+
+function showSlide(el, current, nextUp) {
+  // first render pass
+  for (var j = 0; j < el.length; j++) {
+    el[j].style.display = (j === current) ? \"block\" : \"none\";
+  }
+  // second render pass: toggle display to force the software renderer to repaint fully
+  setTimeout(function() {
+    el[current].style.display = \"none\";
+    void el[current].offsetHeight; // force sync layout between toggles
+    el[current].style.display = \"block\";
+    preloadSlide(el, nextUp);
+  }, 100);
 }
 
 window.addEventListener(\"load\", function() {
@@ -108,9 +116,9 @@ window.addEventListener(\"load\", function() {
   function nextIndex(idx) { return idx < len - 1 ? idx + 1 : 0; }
   function prevIndex(idx) { return idx > 0 ? idx - 1 : len - 1; }
 
-  // pre-render first two slides behind loading screen (z-index:10) so Pi fully paints them
-  if (len > 0) { el[0].style.display = \"block\"; el[0].style.zIndex = \"2\"; }
-  if (len > 1) { el[nextIndex(0)].style.display = \"block\"; el[nextIndex(0)].style.zIndex = \"1\"; }
+  // preload images for first two slides while loading screen is visible
+  if (len > 0) { preloadSlide(el, 0); }
+  if (len > 1) { preloadSlide(el, nextIndex(0)); }
 
   setTimeout(function() { fill.style.width = \"50%\"; }, 100);
   setTimeout(function() { fill.style.width = \"100%\"; }, 1000);
