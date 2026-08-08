@@ -255,6 +255,150 @@ require_once get_parent_theme_file_path('/tribe-events/bookings.php');
 require_once get_parent_theme_file_path('/theme-config/user/middle_name.php');
 
 /**
+ * Set up user context globals (userid, role_name) before template rendering.
+ *
+ * Extracted from header.php so block templates have the same context as PHP templates.
+ */
+function soli_setup_user_context() {
+	global $userid, $role_name;
+
+	$current_user = wp_get_current_user();
+
+	$userid    = 0;
+	$role_name = null;
+
+	if ( $current_user && $current_user->exists() ) {
+		$userid = (int) $current_user->ID;
+
+		if ( ! empty( $current_user->roles ) ) {
+			$role_name = $current_user->roles[0];
+		}
+	}
+}
+add_action( 'template_redirect', 'soli_setup_user_context' );
+
+/**
+ * Set up the global $myrows used to filter event/post queries.
+ *
+ * Extracted from header.php so block templates have the same context as PHP templates.
+ */
+function soli_setup_myrows() {
+	global $myrows, $role_name;
+
+	if ( ! is_user_logged_in() || in_array( $role_name, array( 'lid', 'author' ), true ) ) {
+		if ( function_exists( 'get_myrows' ) ) {
+			$myrows = get_myrows();
+		}
+	}
+}
+add_action( 'template_redirect', 'soli_setup_myrows' );
+
+/**
+ * Output Open Graph / Twitter / itemprop social meta tags in <head>.
+ *
+ * Extracted from header.php to a wp_head hook so block templates also get these tags.
+ */
+function soli_social_meta_tags() {
+	$social_post = array( 'id' => get_queried_object_id() );
+
+	if ( 0 === $social_post['id'] ) {
+		$social_post['post_title']   = 'SOLI.nl';
+		$social_post['guid']         = home_url( $_SERVER['REQUEST_URI'] );
+		$social_post['post_content'] = 'Klik op de link of afbeelding om meer te zien!';
+		$social_post['post_image']   = function_exists( 'get_soli_post_image' ) ? get_soli_post_image( null, 'large' ) : '';
+	} else {
+		$social_post_obj = get_post( $social_post['id'] );
+		if ( $social_post_obj ) {
+			$social_post['guid']         = get_permalink( $social_post_obj );
+			$social_post['post_title']   = $social_post_obj->post_title;
+			$social_post['post_image']   = function_exists( 'get_soli_post_image' ) ? get_soli_post_image( $social_post_obj, 'large' ) : '';
+			$social_content              = substr( wp_strip_all_tags( $social_post_obj->post_content ), 0, 65 );
+			$last_space                  = strrpos( $social_content, ' ' );
+			$social_post['post_content'] = ( false !== $last_space ? substr( $social_content, 0, $last_space ) : $social_content ) . '...';
+		} else {
+			$social_post['post_title']   = 'SOLI.nl';
+			$social_post['guid']         = home_url( $_SERVER['REQUEST_URI'] );
+			$social_post['post_content'] = 'Klik op de link of afbeelding om meer te zien!';
+			$social_post['post_image']   = function_exists( 'get_soli_post_image' ) ? get_soli_post_image( null, 'large' ) : '';
+		}
+	}
+	?>
+<meta property="og:title" content="<?php echo esc_attr( $social_post['post_title'] ); ?>" />
+<meta property="og:url" content="<?php echo esc_url( $social_post['guid'] ); ?>" />
+<meta property="og:description" content="<?php echo esc_attr( $social_post['post_content'] ); ?>" />
+<meta property="og:image" content="<?php echo esc_url( $social_post['post_image'] ); ?>"/>
+<meta property="og:type" content="article" />
+
+<meta itemprop="name" content="<?php echo esc_attr( $social_post['post_title'] ); ?>">
+<meta itemscope itemtype="<?php echo esc_url( $social_post['guid'] ); ?>">
+<meta itemprop="description" content="<?php echo esc_attr( $social_post['post_content'] ); ?>">
+<meta itemprop="image" content="<?php echo esc_url( $social_post['post_image'] ); ?>">
+
+<meta name="twitter:image:alt" content="<?php echo esc_attr( $social_post['post_title'] ); ?>">
+<meta name="twitter:title" content="<?php echo esc_attr( $social_post['post_title'] ); ?>">
+<meta name="twitter:description" content="<?php echo esc_attr( $social_post['post_content'] ); ?>">
+<meta name="twitter:image" content="<?php echo esc_url( $social_post['post_image'] ); ?>">
+<meta name="twitter:site" content="@MzvSoli">
+<meta name="twitter:creator" content="@MzvSoli">
+	<?php
+}
+add_action( 'wp_head', 'soli_social_meta_tags', 5 );
+
+/**
+ * Output Google Analytics tag in <head>.
+ *
+ * Extracted from header.php to a wp_head hook so block templates also load GA.
+ */
+function soli_google_analytics() {
+	?>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-177325852-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-177325852-1');
+</script>
+	<?php
+}
+add_action( 'wp_head', 'soli_google_analytics', 6 );
+
+/**
+ * Enqueue the Google Fonts stylesheet used by the theme.
+ *
+ * Extracted from header.php so block templates also load the fonts.
+ */
+function soli_enqueue_google_fonts() {
+	wp_enqueue_style(
+		'soli-google-fonts',
+		'https://fonts.googleapis.com/css?family=Lato|Raleway&display=swap',
+		array(),
+		null
+	);
+}
+add_action( 'wp_enqueue_scripts', 'soli_enqueue_google_fonts' );
+
+/**
+ * Load the front-end stylesheets and fonts into the block editor canvas.
+ *
+ * wp_enqueue_scripts only runs on the front end, so without this the editor
+ * shows an almost-unstyled page (theme.json + block defaults only). Mirroring
+ * the same reset, base stylesheet and Google Fonts into the editor makes the
+ * editor render close to the rendered page.
+ */
+function soli_editor_styles() {
+	add_editor_style(
+		array(
+			'meyer-reset.css',
+			'style.css',
+			'https://fonts.googleapis.com/css?family=Lato|Raleway&display=swap',
+		)
+	);
+}
+add_action( 'after_setup_theme', 'soli_editor_styles' );
+
+/**
  * Initialize GitHub theme updater.
  */
 function soli_theme_github_updater() {

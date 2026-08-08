@@ -21,8 +21,6 @@ function filenameToDir($name){
   return '/home/pi/Pictures/feedImg/'.explode('.',end(explode('/',$name)))[0].".jpg";
 }
 
-$chckimgs = array();
-
 $args = array( 'post_type' => 'tv', 'posts_per_page' => -1 );
 $loop = new WP_Query( $args );
 $tvs = $loop->posts;
@@ -33,7 +31,7 @@ $html = "<!DOCTYPE html><html><head>
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 <meta name=\"googlebot\" content=\"notranslate\">
 <style>
-html,body {margin:0; padding:0}
+html,body {margin:0; padding:0; cursor:none}
 html      {overflow: hidden}
 h1        {color: black; font-size: 5rem}
 h2        {color: black; font-size: 2rem}
@@ -43,9 +41,12 @@ p         {padding-right: 150px; color: black; font-size: 2rem}
 .left.wide  {width:100vw;background-size:contain;background-color:black;background-repeat:no-repeat;}
 .left.contain {background-size:contain; background-repeat: no-repeat; background-position: center;}
 .right    {width:50vw; height:100vh; padding:10px 50px; float:right; position:relative}
-.stage    {width:100vw; height:100vh}
-.load     {position:relative;width:100vw; height:100vh}
-.load>h3  {top:50%; left:50%; position:absolute; transform: translate(-50%,-50%);}
+.stage    {width:100vw; height:100vh; position:absolute; top:0; left:0; display:none; background:#fff;}
+.load     {width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative; z-index:10; font-family:sans-serif; background:#fff;}
+.load .notes {font-size:2rem; letter-spacing:0.3em; animation:bounce 1.2s ease-in-out infinite;}
+@keyframes bounce {0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)}}
+.load-bar { width:50%; height:6px; background:#e0e0e0; border-radius:3px; margin:24px auto 0; overflow:hidden; }
+.load-fill { width:0%; height:100%; background:#cc0000; border-radius:3px; transition:width 0.8s ease-in-out; }
 .qrcode   {position:absolute; width:150px; height:150px; right:50px; bottom:50px; background-size:contain;}
 .stage.gallery {background-position:center;background-size:cover; position: relative;}
 .stage .items {background: rgba(255,255,255,1);display: flex;flex-direction: column;position: absolute;right: 0; bottom:0; top: 0;width: 30%;padding: 10px 30px;
@@ -61,14 +62,14 @@ p         {padding-right: 150px; color: black; font-size: 2rem}
 .stage .item div:nth-of-type(1) h4:nth-of-type(2){color:rgba(0,0,0,0.4)}
 .stage .item div:nth-of-type(1) h4:nth-of-type(1){color:rgba(0,0,0,0.666)}
 .stage .item div:nth-of-type(2) h4:nth-of-type(2){color:rgba(0,0,0,0.266)}
-</style><body><div id=\"load\" class=\"load\"><h3>Laden...</h3></div>";
+</style><body><div id=\"load\" class=\"load\"><div class=\"notes\">♪ ♫ ♬</div><h3>Laden...</h3><div class=\"load-bar\"><div id=\"load-fill\" class=\"load-fill\"></div></div></div>";
 
 if($events){
   foreach ($events as $post) {
     if(get_post_meta($post->ID,"invisible_on_tv", true) != 1){
       //$html .= get_template_part( 'template-parts/tv', 'event' );
       $html .= get_tv_gallery($events, get_template_directory_uri().'/assets/img/applause-audience-band-196652.jpg',true,$post);
-      array_push($chckimgs, get_soli_post_image($post,"large"));
+
     }
   }
 }
@@ -77,47 +78,67 @@ if($tvs){
   foreach ($tvs as $post){
     if(get_post_meta($post->ID,"invisible_on_tv", true) != 1){
       $html .= get_template_part( 'template-parts/tv', get_post_meta( $post->ID, 'tv_post_type', true ));
-      array_push($chckimgs, get_soli_post_image($post,"large"));
+
     }
   }
 }
 
 $html .= "<script type=\"text/javascript\">
-function checkImgs(){
-  var imgs = ".json_encode($chckimgs).";
-  for (var k = 0; k < imgs.length; k++){
-    var image = new Image();
-    image.src = imgs[k];
-    if (image.width == 0) {
-      //location.reload(true);
-    }
+function preloadSlide(el, idx) {
+  // preload background images into browser cache without displaying the slide
+  var divs = el[idx].querySelectorAll('[style*=\"background-image\"]');
+  for (var k = 0; k < divs.length; k++) {
+    var match = divs[k].style.backgroundImage.match(/url\\(['\"]?([^'\"\\)]+)['\"]?\\)/);
+    if (match) { var img = new Image(); img.src = match[1]; }
   }
 }
 
-function setBlock(el,i){
-  for(var j = 0; j < el.length; j++){
-    if(i===j){
-      el[j].style.display=\"block\"
-    } else {
-      el[j].style.display=\"none\"
-    }
+function showSlide(el, current, nextUp) {
+  // first render pass
+  for (var j = 0; j < el.length; j++) {
+    el[j].style.display = (j === current) ? \"block\" : \"none\";
   }
+  // second render pass: toggle display to force the software renderer to repaint fully
+  setTimeout(function() {
+    el[current].style.display = \"none\";
+    void el[current].offsetHeight; // force sync layout between toggles
+    el[current].style.display = \"block\";
+    preloadSlide(el, nextUp);
+  }, 100);
 }
 
-window.addEventListener(\"load\", function(event){
-  setTimeout(function(){
-    if (typeof checkImgs === \"function\") {
-      checkImgs();
-    }
-    document.getElementById(\"load\").style.display=\"none\";
-    var i = 0;
-    var el = document.getElementsByClassName(\"stage\");
-    setBlock(el,i);
-    setInterval(function(){
-      setBlock(el,i);
-      i=(i < el.length-1) ? i+1 : 0;
-    }, 10000);
-  }, 3000);
+window.addEventListener(\"load\", function() {
+  var i = 0;
+  var el = document.getElementsByClassName(\"stage\");
+  var len = el.length;
+  var fill = document.getElementById(\"load-fill\");
+
+  function nextIndex(idx) { return idx < len - 1 ? idx + 1 : 0; }
+  function prevIndex(idx) { return idx > 0 ? idx - 1 : len - 1; }
+
+  // preload images for first two slides while loading screen is visible
+  if (len > 0) { preloadSlide(el, 0); }
+  if (len > 1) { preloadSlide(el, nextIndex(0)); }
+
+  setTimeout(function() { fill.style.width = \"50%\"; }, 100);
+  setTimeout(function() { fill.style.width = \"100%\"; }, 1000);
+  setTimeout(function() {
+    document.getElementById(\"load\").style.display = \"none\";
+    var timer;
+
+    function show(idx) { i = idx; showSlide(el, i, nextIndex(i)); }
+    function next() { show(nextIndex(i)); }
+    function prev() { show(prevIndex(i)); }
+    function resetTimer() { clearInterval(timer); timer = setInterval(next, 10000); }
+
+    show(i);
+    resetTimer();
+
+    document.addEventListener(\"keydown\", function(e) {
+      if (e.key === \"ArrowRight\") { next(); resetTimer(); }
+      if (e.key === \"ArrowLeft\") { prev(); resetTimer(); }
+    });
+  }, 2000);
 });
 
 </script></body></html>";
