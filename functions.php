@@ -380,6 +380,25 @@ function soli_enqueue_google_fonts() {
 add_action( 'wp_enqueue_scripts', 'soli_enqueue_google_fonts' );
 
 /**
+ * Load the front-end stylesheets and fonts into the block editor canvas.
+ *
+ * wp_enqueue_scripts only runs on the front end, so without this the editor
+ * shows an almost-unstyled page (theme.json + block defaults only). Mirroring
+ * the same reset, base stylesheet and Google Fonts into the editor makes the
+ * editor render close to the rendered page.
+ */
+function soli_editor_styles() {
+	add_editor_style(
+		array(
+			'meyer-reset.css',
+			'style.css',
+			'https://fonts.googleapis.com/css?family=Lato|Raleway&display=swap',
+		)
+	);
+}
+add_action( 'after_setup_theme', 'soli_editor_styles' );
+
+/**
  * Initialize GitHub theme updater.
  */
 function soli_theme_github_updater() {
