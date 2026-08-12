@@ -4,7 +4,7 @@ $image = wp_get_attachment_image_src($fp_info['frontpage_background'],'full');
  ?>
 
 <div class="main_underlay" style="<?php
-  if($image[0]!==null){
+  if(!empty($image[0])){
     echo "background-image:linear-gradient(-135deg, rgba(170, 42, 42, .7) 0,rgba(75, 33, 191, .7) 100%),url('".$image[0]."')";
   }?>;">
     <?php get_search_form()?>

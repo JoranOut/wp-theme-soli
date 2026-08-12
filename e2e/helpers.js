@@ -69,7 +69,13 @@ async function loginAsAdmin( page ) {
 	await page.fill( '#user_login', ADMIN_USER );
 	await page.fill( '#user_pass', ADMIN_PASSWORD );
 	await page.click( '#wp-submit' );
-	await page.waitForURL( ( url ) => ! url.pathname.endsWith( '/wp-login.php' ) );
+	// `commit` rather than the default `load`: the personal page renders the
+	// whole theme and is slow under parallel workers, and nothing here needs it
+	// painted — only the auth cookies, which are set with the response headers.
+	await page.waitForURL(
+		( url ) => ! url.pathname.endsWith( '/wp-login.php' ),
+		{ waitUntil: 'commit' }
+	);
 }
 
 module.exports = {

@@ -56,13 +56,31 @@ function create_soli_table(){
   dbDelta( $sql );
 }
 
+/**
+ * Front page settings, keyed by setting name.
+ *
+ * The values come from the `soli_imaging` rows with type "frontpage", which are
+ * written by the admin screen in views/frontpage.php. An install that has never
+ * saved that screen has no such rows, so every key is seeded with an empty
+ * string first: callers index these keys directly and PHP already substituted
+ * an empty value for the missing ones, only noisily. The defaults keep the
+ * rendered output exactly as it was while removing the "Undefined array key"
+ * warnings.
+ */
 function get_soli_fp_info(){
   global $wpdb;
   $table_name = $wpdb->prefix . "soli_imaging";
   $result = $wpdb->get_results("
   SELECT * FROM $table_name
   WHERE type=\"frontpage\";","ARRAY_N");
-  $array = array();
+  $array = array(
+    'frontpage_background'   => '',
+    'frontpage_header_image' => '',
+    'frontpage_title'        => '',
+    'frontpage_subtitle'     => '',
+    'frontpage_subtext'      => '',
+    'frontpage_button_link'  => '',
+  );
   for ($i=0; $i < count($result); $i++) {
     $array[$result[$i][2]] = $result[$i][3];
   }

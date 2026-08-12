@@ -12,7 +12,7 @@ $myrowsquery = ($myrowsquery)? $myrowsquery : 0;
 
 <article class="extended-results">
 	<header class="page-header" style="background-image: linear-gradient(-135deg, rgba(170, 42, 42, .2) 0%, rgba(75, 33, 191, .2) 100%),
-    url(<?php echo $image[0] ?>)">
+    url(<?php echo $image ? $image[0] : '' ?>)">
 	</header>
 	<div class="page-content">
 		<?php get_search_form()?>

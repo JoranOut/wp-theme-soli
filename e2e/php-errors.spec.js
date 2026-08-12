@@ -16,34 +16,43 @@ const { test, expect } = require( '@playwright/test' );
 const { expectNoPhpDiagnostics } = require( './helpers' );
 
 /*
- * KNOWN DEFECT — the two `test.fail()` cases below are expected to fail. Do not
- * "fix" them by weakening `THEME_DIAGNOSTIC_PATTERN`.
- *
- * `get_soli_fp_info()` (theme-config/admin/functions.php:59) builds its array
- * from the rows of the `soli_imaging` table where `type="frontpage"`. On any
- * install without such a row it returns an empty array, and three call sites
- * read keys out of it without guarding:
- *
- *   - front-page.php:12,22,30 — `frontpage_background`, `frontpage_button_link`,
- *     `frontpage_subtitle`
- *   - template-parts/search-results.php:6,15 — `frontpage_background`, plus
- *     `$image[0]` on the `false` that `wp_get_attachment_image_src()` returns
- *   - theme-config/login/functions.php:17,20,56 — the same pattern again
- *
- * Enabling `WP_DEBUG` for the tests environment is what made these visible.
- * Once `get_soli_fp_info()` returns its keys with defaults (and the `$image[0]`
- * dereferences are guarded), turn these back into plain `test()` calls.
+ * The front page and search templates both read their header artwork and call
+ * to action out of `get_soli_fp_info()` (theme-config/admin/functions.php),
+ * which returns the `soli_imaging` rows of type "frontpage" keyed by setting
+ * name. A wp-env install has never saved that admin screen, so there are no
+ * such rows and the function falls back to its empty-string defaults — which is
+ * exactly the path these tests exercise. `wp_get_attachment_image_src()`
+ * returns `false` for an empty attachment id, hence the `$image` guards around
+ * every `$image[0]` in those templates.
  */
 
 test.describe( 'renders without PHP errors', () => {
-	test.fail( 'on the front page (front-page.php)', async ( { page } ) => {
+	test( 'on the front page (front-page.php)', async ( { page } ) => {
 		const response = await page.goto( '/' );
 		expect( response.status() ).toBe( 200 );
 		await expectNoPhpDiagnostics( page );
 	} );
 
-	test.fail( 'on a search results page (search.php)', async ( { page } ) => {
+	test( 'on a search results page (search.php)', async ( { page } ) => {
 		const response = await page.goto( '/?s=hello' );
+		expect( response.status() ).toBe( 200 );
+		await expectNoPhpDiagnostics( page );
+	} );
+
+	test( 'on an empty search (template-parts/search-none.php)', async ( {
+		page,
+	} ) => {
+		// search.php picks search-none over search-results on an empty term,
+		// not on zero results.
+		const response = await page.goto( '/?s=' );
+		expect( response.status() ).toBe( 200 );
+		await expectNoPhpDiagnostics( page );
+	} );
+
+	test( 'on the login screen', async ( { page } ) => {
+		// theme-config/login/functions.php paints the login background from the
+		// same front page settings.
+		const response = await page.goto( '/wp-login.php' );
 		expect( response.status() ).toBe( 200 );
 		await expectNoPhpDiagnostics( page );
 	} );
