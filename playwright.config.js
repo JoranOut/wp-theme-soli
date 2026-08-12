@@ -13,7 +13,7 @@ module.exports = defineConfig({
 	workers: process.env.CI ? 1 : undefined,
 	reporter: 'html',
 	use: {
-		baseURL: process.env.WP_BASE_URL || 'http://localhost:8889',
+		baseURL: process.env.WP_BASE_URL || 'http://localhost:8909',
 		trace: 'on-first-retry',
 		screenshot: 'only-on-failure',
 	},
@@ -25,7 +25,7 @@ module.exports = defineConfig({
 	],
 	webServer: {
 		command: 'npm run env:start',
-		url: 'http://localhost:8888',
+		url: 'http://localhost:8908',
 		reuseExistingServer: true,
 		timeout: 120000,
 	},
