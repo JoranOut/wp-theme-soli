@@ -17,7 +17,7 @@ function set_login_header_image(){
   $image = wp_get_attachment_image_src($fp_info['frontpage_background'],'full');
   echo '<style type="text/css">
     body.login {
-      background-image: linear-gradient(-135deg, rgba(170, 42, 42, .8) 0%, rgba(75, 33, 191, .8) 100%), url(\''.$image[0].'\');
+      background-image: linear-gradient(-135deg, rgba(170, 42, 42, .8) 0%, rgba(75, 33, 191, .8) 100%), url(\''.($image ? $image[0] : '').'\');
       background-position:center;
     }
     a.login_background {

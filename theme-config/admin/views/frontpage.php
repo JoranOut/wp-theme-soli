@@ -65,7 +65,7 @@ if( isset($_POST[ $hidden_default_field_name ]) && $_POST[ $hidden_default_field
             class="select_event"
             data-url="<?php echo esc_attr($fp_info['frontpage_button_link']);?>"
             data-subtitle="<?php echo esc_attr($fp_info['frontpage_subtitle']);?>"
-            data-image="<?php echo esc_url(wp_get_attachment_image_src($fp_info['frontpage_background'],'full')[0]);?>"
+            data-image="<?php $bg_src = wp_get_attachment_image_src($fp_info['frontpage_background'],'full'); echo esc_url($bg_src ? $bg_src[0] : '');?>"
             data-imageid="<?php echo esc_attr($fp_info['frontpage_background']);?>"
             data-date="<?php echo esc_attr($fp_info['frontpage_subtext']);?>"
             value="0"/>

@@ -1,16 +1,28 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
-	"core": null,
+	"core": "https://wordpress.org/wordpress-7.0.4.zip",
 	"phpVersion": "8.4",
 	"themes": [
 		"."
 	],
 	"plugins": [],
+	"port": 8908,
 	"config": {
 		"WP_DEBUG": true,
 		"WP_DEBUG_LOG": true,
 		"WP_DEBUG_DISPLAY": true,
 		"SCRIPT_DEBUG": true
+	},
+	"env": {
+		"tests": {
+			"port": 8909,
+			"config": {
+				"WP_DEBUG": true,
+				"WP_DEBUG_LOG": true,
+				"WP_DEBUG_DISPLAY": true,
+				"SCRIPT_DEBUG": true
+			}
+		}
 	},
 	"mappings": {
 		"wp-content/debug.log": "./debug.log"

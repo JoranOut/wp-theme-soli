@@ -20,7 +20,7 @@ npm install
 npm run env:start
 ```
 
-Local site runs at `http://localhost:8888` (admin: admin/password).
+Local site runs at `http://localhost:8908` (admin: admin/password).
 
 ### Testing
 

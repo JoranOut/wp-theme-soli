@@ -202,7 +202,12 @@ function save_tv_settings(){
   die();
 }
 
-function get_tv_gallery($items, $background, $calendar = false, $post){
+// $calendar carried a `= false` default while $post after it had none, which PHP
+// 8.x deprecates and already treated as required. The single caller (tv.php:71)
+// always passes all four arguments, so dropping the dead default changes nothing
+// at runtime and stops a compile-time deprecation that landed on whichever page
+// happened to compile this file first.
+function get_tv_gallery($items, $background, $calendar, $post){
   if($calendar){
     return tv_calendar_gallery($items, $background, $post);
   } else {
