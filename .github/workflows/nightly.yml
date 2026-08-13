@@ -35,6 +35,36 @@ jobs:
           echo "nightly_version=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
           echo "date=${DATE}" >> $GITHUB_OUTPUT
 
+      - name: Stamp nightly version
+        env:
+          V: ${{ steps.version.outputs.nightly_version }}
+        run: |
+          set -euo pipefail
+          # publish.js zips what is on disk, so the nightly version has to be
+          # written into the version locations *before* the build. Without this
+          # the zip reports the stable version, no site can tell a nightly from
+          # a stable install, and the updater's channel split cannot engage.
+          # For a theme the version WordPress reads is the style.css header,
+          # not a plugin header. Working tree only - nothing is committed back.
+          sed -i -E "s|^(Version: ).*$|\1${V}|" style.css
+          sed -i -E "s|(~Current Version:[[:space:]]*)[^~]*(~)|\1${V}\2|" README.md
+          # package.json is excluded from the zip, but keep it consistent so a
+          # later change to publish.js's ignore list cannot reintroduce a drift.
+          node -e 'const f="package.json",p=require("./"+f);p.version=process.argv[1];require("fs").writeFileSync(f,JSON.stringify(p,null,2)+"\n")' "$V"
+
+          # Fail loudly rather than shipping a mis-stamped zip.
+          for check in \
+            "style.css:Version: ${V}" \
+            "README.md:~Current Version:${V}~"; do
+            file="${check%%:*}"; needle="${check#*:}"
+            if ! grep -qF -- "$needle" "$file"; then
+              echo "::error::failed to stamp '${needle}' into ${file}"
+              exit 1
+            fi
+          done
+          test "$(node -p "require('./package.json').version")" = "$V"
+          echo "Stamped $V into all version locations."
+
       - name: Build package
         run: node ./publish.js
 
