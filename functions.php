@@ -411,8 +411,14 @@ function soli_theme_github_updater() {
 			'raw_url'      => 'https://raw.githubusercontent.com/JoranOut/wp-theme-soli/master',
 			'github_url'   => 'https://github.com/JoranOut/wp-theme-soli',
 			'zip_url'      => 'https://github.com/JoranOut/wp-theme-soli/releases/latest/download/wp-theme-soli.zip',
-			'requires'     => '6.0.0',
-			'tested'       => '6.7.0',
+			// Both ends of the supported range are rewritten at packaging time by
+			// the nightly and release workflows, from the two WordPress versions
+			// the e2e matrix actually ran against - the floor branch declared in
+			// package.json as wordpress.requiresAtLeast, and wordpress.org's
+			// current release. Do not reformat.
+			'requires'     => '6.9', // oldest branch the e2e suite covers; see package.json wordpress.requiresAtLeast
+			'tested'       => '7.0.4', // newest release the e2e suite covers
+
 			'requires_php' => '8.4',
 			'readme'       => 'README.md',
 		);

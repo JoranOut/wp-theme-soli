@@ -4,6 +4,13 @@
   "description": "Main public-facing theme for soli.nl",
   "author": "Muziekvereniging Soli",
   "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=24"
+  },
+  "wordpress": {
+    "_comment": "Oldest supported WordPress branch. The e2e suite runs against the newest patch of this branch as well as the newest release, and the release workflows stamp it into the theme updater's 'requires'. Raise it when production no longer runs it.",
+    "requiresAtLeast": "6.9"
+  },
   "scripts": {
     "test:e2e": "wp-scripts test-playwright",
     "test:e2e:watch": "wp-scripts test-playwright --watch",
