@@ -15,7 +15,7 @@ jobs:
     # that would leave the version actually serving soli.nl unexercised - and
     # this theme predates most of what it now runs on.
     name: e2e (WP ${{ matrix.channel }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
